@@ -1,9 +1,10 @@
 package DBIx::Enabler::Query;
+# ABSTRACT: More informative and powerful queries
 
 =head1 SYNOPSIS
 
-	new DBIx::Enabler::Query(\"SELECT * FROM table");
-	new DBIx::Enabler::Query("/path/to/query.sql", variables => {});
+	DBIx::Enabler::Query->new(\"SELECT * FROM table");
+	DBIx::Enabler::Query->new("/path/to/query.sql", variables => {});
 
 An object to encapsulate a database query
 and various methods to provide you with more information
@@ -15,6 +16,19 @@ use strict;
 use warnings;
 
 use Template 2.22; # Template Toolkit
+
+=method new
+
+First argument is the sql template to process.
+
+=for :list
+* A string is treated as a filename,
+* A scalar reference is treated as the template text.
+
+The I<variables> attribute can be set to a hashref
+of variables made avaiable to the template.
+
+=cut
 
 sub new {
 	my $class = shift;
