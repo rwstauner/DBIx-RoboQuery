@@ -25,6 +25,8 @@ sub new {
 	};
 
 	$self->{tt} = Template->new(
+		ABSOLUTE => 1,
+		STRICT => 1,
 		VARIABLES => {
 			query => $self,
 			%{$self->{variables}}
