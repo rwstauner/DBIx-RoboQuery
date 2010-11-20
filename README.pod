@@ -1,0 +1,11 @@
+=head1 DESCRIPTION
+
+The modules in this namespace are meant to enable
+the user to do more than basic DBI programming.
+
+This means getting more information
+and doing more powerful things.
+
+See POD for more information.
+
+=cut
