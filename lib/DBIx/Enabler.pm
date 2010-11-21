@@ -1,6 +1,9 @@
 package DBIx::Enabler;
 # ABSTRACT: Enable yourself to do more with DBI
 
+use strict;
+use warnings;
+
 1;
 
 =head1 DESCRIPTION
