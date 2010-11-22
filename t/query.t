@@ -52,6 +52,6 @@ my $always = {hello => {there => 'silly', you => 'rabbit'}};
 
 foreach my $template ( @templates ){
 	my( $in, $out, $vars ) = @$template;
-	my $q = $mod->new($in, variables => $always);
+	my $q = $mod->new($in, {variables => $always});
 	is($q->sql($vars), $out, 'template');
 }

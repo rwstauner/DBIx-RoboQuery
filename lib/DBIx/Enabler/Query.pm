@@ -4,7 +4,7 @@ package DBIx::Enabler::Query;
 =head1 SYNOPSIS
 
 	DBIx::Enabler::Query->new(\"SELECT * FROM table");
-	DBIx::Enabler::Query->new("/path/to/query.sql", variables => {});
+	DBIx::Enabler::Query->new("/path/to/query.sql", {variables => {}});
 
 An object to encapsulate a database query
 and various methods to provide you with more information
@@ -35,7 +35,7 @@ sub new {
 	my $self = {
 		variables => {},
 		template => shift,
-		(@_ == 1 ? %{@_} : @_)
+		@_ ? %{$_[0]} : ()
 	};
 
 	$self->{tt} = Template->new(
