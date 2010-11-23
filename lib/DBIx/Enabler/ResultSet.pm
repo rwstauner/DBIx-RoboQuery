@@ -123,7 +123,7 @@ sub columns {
 	my ($self) = @_;
 	croak('Columns not known until after the statement has executed')
 		unless $self->{executed};
-	return (@{$self}{qw(key_columns non_key_columns)});
+	return map { @{$self->{$_}} } qw(key_columns non_key_columns);
 }
 
 =method execute
@@ -146,12 +146,16 @@ sub execute {
 
 	# guess primary key and column order if we don't have them
 	if( my $columns = $self->{sth}->{ $self->{hash_key_name} } ){
-		$self->{key_columns} ||= [ $columns->[0] ];
+		$self->{key_columns} = [ $columns->[0] ]
+			if !@{$self->{key_columns}};
+
 		# get the "other" columns (not keys, not dropped)
 		my %other = map { $_ => 1 }
 			map { @{$self->{$_}} } qw(key_columns drop_columns);
 		$self->{non_key_columns} = [ grep { !$other{$_} } @$columns ];
 
+		$self->{order} = [order_from_sql($sql, $self->{query})]
+			if !@{$self->{order}};
 	}
 
 	return $self->{executed};
