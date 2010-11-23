@@ -20,7 +20,7 @@ use DBIx::Enabler::Util qw(order_from_sql);
 
 The first argument should be a DBIx::Enabler::Query instance.
 
-The second argument is a hashref of options:
+The second argument is a hash or hashref of options:
 
 =for :list
 * dbh          => DBI database handle
@@ -30,9 +30,11 @@ The second argument is a hashref of options:
 
 sub new {
 	my $class = shift;
+	my $query = shift;
+	my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
 	my $self = {
-		query => $_[0],
-		%{$_[1]}
+		query => $query,
+		$opts
 	};
 
 	# defaults
