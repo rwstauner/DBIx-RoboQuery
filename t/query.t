@@ -52,7 +52,7 @@ my @templates = (
 	]
 );
 
-plan tests => @templates + 4;
+plan tests => @templates + 5;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
@@ -75,3 +75,5 @@ foreach my $template ( @templates ){
 	my $q = $mod->new({%$in, variables => $always});
 	is($q->sql($vars), $out, 'template');
 }
+
+isa_ok($mod->new(sql => "hi.")->results, 'DBIx::Enabler::ResultSet');

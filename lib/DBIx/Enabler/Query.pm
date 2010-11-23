@@ -18,6 +18,7 @@ use warnings;
 
 use Carp qw(carp croak);
 use DBIx::Enabler ();
+use DBIx::Enabler::ResultSet ();
 use Template 2.22; # Template Toolkit
 
 =method new
@@ -119,6 +120,27 @@ sub pre_process_sql {
 	$sql = $self->{prefix} . $sql if defined $self->{prefix};
 	$sql = $sql . $self->{suffix} if defined $self->{suffix};
 	return $sql;
+}
+
+=method resultset
+
+This is a convenience method which returns a
+L<DBIx::Enabler::ResultSet> object based upon this query.
+
+Any arguments passed will be passed to the
+L<ResultSet constructor|DBIx::Enabler::ResultSet/new>.
+
+This method is aliased as C<results()>.
+
+=cut
+
+sub resultset {
+	my ($self) = shift;
+	DBIx::Enabler::ResultSet->new($self, @_);
+}
+{
+	no warnings 'once';
+	*result = *results = *resultset;
 }
 
 =method sql
