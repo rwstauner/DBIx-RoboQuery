@@ -58,9 +58,8 @@ sub new {
 	};
 
 	bless $self, $class;
-	my @pass_through_args = $self->_pass_through_args();
 
-	foreach my $var ( @pass_through_args ){
+	foreach my $var ( $self->_pass_through_args() ){
 		$self->{$var} = $opts{$var} if exists($opts{$var});
 	}
 
@@ -94,7 +93,8 @@ sub new {
 
 =method _pass_through_args
 
-A list of allowed arguments to the constructor that will be set on the object.
+A list of allowed arguments to the constructor that
+will pass through to the new object.
 
 This is mostly here to allow subclasses to easily overwrite it.
 

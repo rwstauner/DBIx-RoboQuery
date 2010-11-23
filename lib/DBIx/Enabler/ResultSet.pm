@@ -34,15 +34,27 @@ sub new {
 	my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
 	my $self = {
 		query => $query,
-		%opts
 	};
+
+	bless $self, $class;
+
+	foreach my $var ( $self->_pass_through_args() ){
+		# allow options to be specified directly
+		if( exists($opts{$var}) ){
+			$self->{$var} = $opts{$var};
+		}
+		# or look for them on the query object
+		elsif( exists($self->{query}{$var}) ){
+			$self->{$var} = $self->{query}{$var};
+		}
+	}
 
 	# defaults
 	$self->{dbh} ||= $self->{query}{dbh};
 	$self->{drop_columns} ||= [];
 	$self->{hash_key_name} ||= $self->{dbh}{FetchHashKeyName} || 'NAME_lc';
 
-	bless {}, $class;
+	return $self;
 }
 
 =method array
@@ -144,6 +156,20 @@ sub hash {
 	my ($self) = @_;
 	$self->execute() if !$self->{executed};
 	return $self->fetchall_hashref($self->{key_columns});
+}
+
+=method _pass_through_args
+
+A list of allowed arguments to the constructor that
+will pass through to the new object.
+
+This is mostly here to allow subclasses to easily overwrite it.
+
+=cut
+
+sub _pass_through_args {
+	qw(
+	);
 }
 
 sub DESTROY {
