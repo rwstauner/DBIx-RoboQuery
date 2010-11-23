@@ -49,10 +49,20 @@ sub new {
 		}
 	}
 
-	# defaults
-	$self->{dbh} ||= $self->{query}{dbh};
-	$self->{drop_columns} ||= [];
-	$self->{hash_key_name} ||= $self->{dbh}{FetchHashKeyName} || 'NAME_lc';
+	# the columns attributes should be arrayrefs
+	foreach my $cols ( qw(key_columns drop_columns order) ){
+		if( $self->{$cols} ){
+			$self->{$cols} = [$self->{$cols}]
+				unless ref($self->{$cols}) eq 'ARRAY';
+		}
+		else{
+			$self->{$cols} = [];
+		}
+	}
+
+	$self->{hash_key_name} ||=
+		($self->{dbh} && $self->{dbh}{FetchHashKeyName})
+		|| 'NAME_lc';
 
 	return $self;
 }
@@ -169,6 +179,10 @@ This is mostly here to allow subclasses to easily overwrite it.
 
 sub _pass_through_args {
 	qw(
+		drop_columns
+		hash_key_name
+		key_columns
+		order
 	);
 }
 
