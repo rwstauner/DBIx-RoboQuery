@@ -45,17 +45,17 @@ sub new {
 	bless {}, $class;
 }
 
-=method arrayrefs
+=method array
 
-	$resultset->arrayrefs();
-	$resultset->arrayrefs({}); # get hashrefs anyway
+	$resultset->array();   # array of arrays
+	$resultset->array({}); # array of hashrefs
 
 Calls L<fetchall_arrayref|DBI/fetchall_arrayref>(@_)
 on the DBI statement handle (passing any supplied arguments).
 
 =cut
 
-sub arrayrefs {
+sub array {
 	my ($self) = shift;
 	$self->execute() if !$self->{executed};
 	$self->{sth}->fetchall_arrayref(@_);
@@ -132,17 +132,17 @@ foreach my $cols ( qw(key_columns non_key_columns) ){
 	}
 }
 
-=method hashrefs
+=method hash
 
 Returns a tree of hash refs like
 L<fetchall_hashref|DBI/fetchall_hashref>.
 
 =cut
 
-sub hashrefs {
+sub hash {
 	my ($self) = @_;
 	$self->execute() if !$self->{executed};
-	return $self->fetchall_hashref;
+	return $self->fetchall_hashref($self->{key_columns});
 }
 
 sub DESTROY {
