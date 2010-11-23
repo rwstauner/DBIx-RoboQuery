@@ -44,12 +44,6 @@ A hashref of variables made available to the template
 
 =cut
 
-my @pass_through_args = qw(
-	prefix
-	suffix
-	variables
-);
-
 sub new {
 	my $class = shift;
 	my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
@@ -61,6 +55,9 @@ sub new {
 	my $self = {
 		variables => {},
 	};
+
+	bless $self, $class;
+	my @pass_through_args = $self->_pass_through_args();
 
 	foreach my $var ( @pass_through_args ){
 		$self->{$var} = $opts{$var} if exists($opts{$var});
@@ -91,8 +88,25 @@ sub new {
 	)
 		or die "Query error: Template::Toolkit failed: $Template::ERROR\n";
 
-	bless $self, $class;
+	return $self;
 }
+
+=method _pass_through_args
+
+A list of allowed arguments to the constructor that will be set on the object.
+
+This is mostly here to allow subclasses to easily overwrite it.
+
+=cut
+
+sub _pass_through_args {
+	qw(
+		prefix
+		suffix
+		variables
+	);
+}
+
 
 =method pre_process_sql
 
