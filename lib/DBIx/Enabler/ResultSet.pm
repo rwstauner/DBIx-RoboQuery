@@ -126,6 +126,17 @@ sub columns {
 	return map { @{$self->{$_}} } qw(key_columns non_key_columns);
 }
 
+=method drop_columns
+
+Return a list of the column names being dropped
+(ignored) from the result set.
+
+=cut
+
+sub drop_columns {
+	return @{$_[0]->{drop_columns}};
+}
+
 =method execute
 
 Execute the I<query> against the I<dbh>.
@@ -165,6 +176,15 @@ sub execute {
 
 Return a list of the primary key columns from the query.
 
+=cut
+
+sub key_columns {
+	my ($self) = @_;
+	croak('Columns not known until after the statement has executed')
+		unless @{$self->{key_columns}} || $self->{executed};
+	return @{$self->{key_columns}};
+}
+
 =method non_key_columns
 
 Return a list of the other columns from the query.
@@ -173,11 +193,11 @@ Excludes key columns and dropped columns.
 
 =cut
 
-foreach my $cols ( qw(key_columns non_key_columns) ){
-	no strict 'refs';
-	*$cols = sub { 
-		@{$_[0]->{$cols}};
-	}
+sub non_key_columns {
+	my ($self) = @_;
+	croak('Columns not known until after the statement has executed')
+		unless $self->{executed};
+	return @{$self->{non_key_columns}};
 }
 
 =method hash
