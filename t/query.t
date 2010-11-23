@@ -10,34 +10,34 @@ my $cond_while = qq|1 [% FOREACH account IN account_numbers %] [% IF loop.first 
 # This is mostly testing Template Toolkit which probably isn't useful
 my @templates = (
 	[
-		$tmp->filename,
-		 qq|hello false|
+		{file => $tmp->filename},
+		qq|hello false|
 	],
 	[
-		\qq|hello [% IF 1 %]true[% END %]|,
-		 qq|hello true|
+		{sql => qq|hello [% IF 1 %]true[% END %]|},
+		qq|hello true|
 	],
 	[
-		\qq|hello [% "there" %]|,
-		 qq|hello there|
+		{sql => qq|hello [% "there" %]|},
+		qq|hello there|
 	],
 	[
 		\qq|hello [% hello.there %]/[% hello.you %]|,
 		 qq|hello silly/rabbit|
 	],
 	[
-		\$cond_while,
-		 qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
+		{sql => $cond_while},
+		qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
 		{account_numbers => [' D001 ', 'D002']}
 	],
 	[
-		\$cond_while,
-		 qq|1   WHERE  account_number LIKE '%D002%' |,
+		{sql => $cond_while},
+		qq|1   WHERE  account_number LIKE '%D002%' |,
 		{account_numbers => ['D00 2']}
 	],
 	[
-		\$cond_while,
-		 qq|1 |,
+		{sql => $cond_while},
+		qq|1 |,
 		{account_numbers => []}
 	]
 );
@@ -52,6 +52,6 @@ my $always = {hello => {there => 'silly', you => 'rabbit'}};
 
 foreach my $template ( @templates ){
 	my( $in, $out, $vars ) = @$template;
-	my $q = $mod->new($in, {variables => $always});
+	my $q = $mod->new({%$in, variables => $always});
 	is($q->sql($vars), $out, 'template');
 }
