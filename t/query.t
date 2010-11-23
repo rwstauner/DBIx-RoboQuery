@@ -32,13 +32,13 @@ my @templates = (
 	],
 	[
 		\$cond_while,
-		  qq|1   WHERE  account_number LIKE '%D002%' |,
+		 qq|1   WHERE  account_number LIKE '%D002%' |,
 		{account_numbers => ['D00 2']}
 	],
 	[
 		\$cond_while,
 		 qq|1 |,
-		 {account_numbers => []}
+		{account_numbers => []}
 	]
 );
 
