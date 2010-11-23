@@ -179,6 +179,7 @@ This is mostly here to allow subclasses to easily overwrite it.
 
 sub _pass_through_args {
 	qw(
+		dbh
 		drop_columns
 		hash_key_name
 		key_columns

@@ -36,6 +36,8 @@ The second argument is a hash or hashref of options:
 The SQL query [template] in a string (or a reference to a string)
 * I<file>
 The file path of a SQL query [template] (mutually exclusive with I<sql>)
+* I<dbh>
+A database handle (the return of C<< DBI->connect() >>)
 * I<prefix>
 A string to be prepended to the SQL before parsing the template
 * I<suffix>
@@ -102,6 +104,7 @@ This is mostly here to allow subclasses to easily overwrite it.
 
 sub _pass_through_args {
 	qw(
+		dbh
 		prefix
 		suffix
 		variables
