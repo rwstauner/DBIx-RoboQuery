@@ -22,20 +22,25 @@ our @EXPORT_OK = qw(
 
 =func order_from_sql
 
-	$arrayref = order_from_sql("SELECT * FROM table ORDER BY field", {});
+	# returns qw(fld1)
+	@order = order_from_sql("SELECT * FROM table ORDER BY field");
 
-	$arrayref = order_from_sql(
-		"SELECT * FROM table ORDER BY field FETCH 2 ROWS",
+	# returns qw(fld1 fld2)
+	@order = order_from_sql(
+		"SELECT * FROM table ORDER BY fld1, fld2 FETCH 2 ROWS",
 		{suffix => 'FETCH 2 ROWS'}
 	);
+		# suffix can also be an re: qr/FETCH \d+ ROWS/
 
-Return an array ref of the column names of the sort order
-based on the ORDER clause of a SQL statement.
+Return a list of the column names that make up the sort order
+based on the ORDER BY clause of a SQL statement.
 
 Options can be specified in a hashref:
 
 =for :list
-* suffix => A string of sql that follows the ORDER BY clause;
+* I<suffix>
+A string of sql (or a regular expression compiled with qr//)
+that follows the ORDER BY clause;
 Often ORDER BY is the last clause of the statement.
 To anchor the regular expression used to find the ORDER BY clause
 to the end of the string,
@@ -46,24 +51,28 @@ and completes the statement.
 
 sub order_from_sql {
 	my ($sql, $opts) = @_;
+	# TODO: consider including /|LIMIT \d+/ in suffix unless 'no_limit' provided
 	$opts ||= {};
-	$opts->{suffix} ||= '';
 
-	# return array ref (even if empty)
-	my $order = [];
+	my $suffix = $opts->{suffix}
+		# don't inherit /x from the parent re below
+		? qr/(?-x:$opts->{suffix})?/
+		# nothing
+		: qr//;
 
-	$sql =~ /ORDER\s+BY\s+(          # start capture
-		(?:\w+)                      # first column
+	return
+	$sql =~ /\bORDER\s+BY\s+         # start order by clause
+		(                            # start capture
+			(?:\w+)                  # first column
 			(?:\s*,\s*               # comma, possibly spaced
 				(?:\w+)              # next column
 			)*                       # repeat
 		)\s*                         # end capture
-		(?:$opts->{suffix})?         # possible query suffix
-		\s*;?\s*$/isx                # end of SQL
-	and
-		$order = [split(/\s*,\s*/, $1)];
-
-	return $order;
+		$suffix                      # possible query suffix
+		\s*;?\s*\Z                   # end of SQL
+	/isx
+		? split(/\s*,\s*/, $1)
+		: ();
 }
 
 1;
