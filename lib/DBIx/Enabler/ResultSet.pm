@@ -164,12 +164,21 @@ sub execute {
 		my %other = map { $_ => 1 }
 			map { @{$self->{$_}} } qw(key_columns drop_columns);
 		$self->{non_key_columns} = [ grep { !$other{$_} } @$columns ];
-
-		$self->{order} = [order_from_sql($sql, $self->{query})]
-			if !@{$self->{order}};
 	}
 
 	return $self->{executed};
+}
+=method hash
+
+Returns a tree of hash refs like
+L<fetchall_hashref|DBI/fetchall_hashref>.
+
+=cut
+
+sub hash {
+	my ($self) = @_;
+	$self->execute() if !$self->{executed};
+	return $self->fetchall_hashref($self->{key_columns});
 }
 
 =method key_columns
@@ -200,17 +209,17 @@ sub non_key_columns {
 	return @{$self->{non_key_columns}};
 }
 
-=method hash
+=method order
 
-Returns a tree of hash refs like
-L<fetchall_hashref|DBI/fetchall_hashref>.
+Return a list of the column names of the sort order of the query.
 
 =cut
 
-sub hash {
+sub order {
 	my ($self) = @_;
-	$self->execute() if !$self->{executed};
-	return $self->fetchall_hashref($self->{key_columns});
+	$self->{order} = [order_from_sql($self->{query}->sql, $self->{query})]
+		if !@{$self->{order}};
+	return @{$self->{order}};
 }
 
 =method _pass_through_args
