@@ -50,10 +50,20 @@ my @templates = (
 	]
 );
 
-plan tests => @templates + 1;
+plan tests => @templates + 4;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
+isa_ok($mod->new(sql => 'SQL'), $mod);
+
+SKIP: {
+	my $test_mod = 'Test::Exception';
+	eval "require ${test_mod}; ${test_mod}->import()";
+	skip("$test_mod required to test exceptions", 2) if $@;
+
+	throws_ok(sub { $mod->new(sql => 'SQL', file => '/dev/null') }, qr'both', 'not both');
+	throws_ok(sub { $mod->new() }, qr'one of', 'one');
+}
 
 #my $config = test_config;
 my $always = {hello => {there => 'silly', you => 'rabbit'}};
