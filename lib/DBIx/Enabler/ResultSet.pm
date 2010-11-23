@@ -18,13 +18,38 @@ use DBIx::Enabler::Util qw(order_from_sql);
 
 =method new
 
+	DBIx::Enabler::ResultSet->new($query, opt => 'val');
+
+	# Can also be instantiated from a Query object:
+	DBIx::Enabler::Query->new(sql => $sql)->resultset(opt => 'val');
+
 The first argument should be a DBIx::Enabler::Query instance.
 
-The second argument is a hash or hashref of options:
+The second argument is a hash or hashref of options.
+These options will be checked in the passed hash[ref] first.
+If they do not exist, they will be looked for on the Query object.
+
+	my $dbh = DBI->connect();
+	$query = DBIx::Enabler::Query->new(sql => $sql, dbh => $dbh);
+
+	# These two invocations will produce the same result:
+	# The 1st call sets 'dbh' explicitly.
+	# The 2nd call will find the 'dbh' attribute on $query.
+
+	DBIx::Enabler::ResultSet->new($query, dbh => $dbh);
+	DBIx::Enabler::ResultSet->new($query);
 
 =for :list
-* dbh          => DBI database handle
-* drop_columns => an arrayref of column names to be dropped from the result set
+* I<dbh>
+A database handle (the return of C<< DBI->connect() >>)
+* I<drop_columns>
+An arrayref of column names to be dropped (ignored) from the result set
+* I<key_columns>
+An arrayref of column names that define 'unique' records;
+This is used by the L</hash>() method.  See also L<DBI/fetchall_hashref>.
+* I<order>
+An arrayref of column names to specify the sort order of the query;
+If not provided this will be guessed from the SQL statement.
 
 =cut
 
