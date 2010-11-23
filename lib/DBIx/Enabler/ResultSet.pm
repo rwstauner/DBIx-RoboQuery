@@ -148,14 +148,10 @@ sub execute {
 	if( my $columns = $self->{sth}->{ $self->{hash_key_name} } ){
 		$self->{key_columns} ||= [ $columns->[0] ];
 		# get the "other" columns (not keys, not dropped)
-		$self->{non_key_columns} = [];
-		# TODO: Benchmark this against /^(?:${\ join('|', key, drop) })$/o
-		foreach my $column ( @$columns ){
-			push(@{$self->{non_key_columns}}, $column)
-				unless grep { $_ eq $column }
-					(@{$self}{qw(key_columns drop_columns)});
-		}
-		$self->{order} ||= order_from_sql($sql);
+		my %other = map { $_ => 1 }
+			map { @{$self->{$_}} } qw(key_columns drop_columns);
+		$self->{non_key_columns} = [ grep { !$other{$_} } @$columns ];
+
 	}
 
 	return $self->{executed};
