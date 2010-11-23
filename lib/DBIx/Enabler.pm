@@ -4,7 +4,21 @@ package DBIx::Enabler;
 use strict;
 use warnings;
 
+# slurp_file is not in Util b/c it isn't DBI or SQL related
+{
+	local $@;
+	# Don't require the user to install File::Slurp
+	my $slurp = eval "require File::Slurp";
+	   $slurp = 0 if $@;
+	no warnings 'once';
+	*slurp_file = $slurp
+		? \&File::Slurp::read_file
+		: sub { local (@ARGV, $/) = @_; <> };
+}
+
 1;
+
+=for Pod::Coverage slurp_file
 
 =head1 DESCRIPTION
 
