@@ -21,5 +21,6 @@ and doing more powerful things.
 =for :list
 * L<DBIx::Enabler::Query>
 * L<DBIx::Enabler::ResultSet>
+* L<DBIx::Enabler::Util>
 
 =cut
