@@ -35,12 +35,18 @@ The second argument is a hash or hashref of options:
 The SQL query [template] in a string (or a reference to a string)
 * I<file>
 The file path of a SQL query [template] (mutually exclusive with I<sql>)
+* I<prefix>
+A string to be prepended to the SQL before parsing the template
+* I<suffix>
+A string to be appended  to the SQL before parsing the template
 * I<variables>
 A hashref of variables made available to the template
 
 =cut
 
 my @pass_through_args = qw(
+	prefix
+	suffix
 	variables
 );
 
@@ -88,6 +94,19 @@ sub new {
 	bless $self, $class;
 }
 
+=method pre_process_sql
+
+Prepend I<prefix> and append I<suffix>.
+
+=cut
+
+sub pre_process_sql {
+	my ($self, $sql) = @_;
+	$sql = $self->{prefix} . $sql if defined $self->{prefix};
+	$sql = $sql . $self->{suffix} if defined $self->{suffix};
+	return $sql;
+}
+
 =method sql
 
 	$query->sql;
@@ -101,7 +120,8 @@ sub sql {
 	my ($self, $vars) = @_;
 	$vars ||= {};
 	my $output;
-	$self->{tt}->process(\$self->{template}, $vars, \$output)
+	my $sql = $self->pre_process_sql($self->{template});
+	$self->{tt}->process(\$sql, $vars, \$output)
 		or die($self->{tt}->error(), "\n");
 	return $output;
 }

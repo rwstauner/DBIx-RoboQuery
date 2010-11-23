@@ -22,8 +22,16 @@ my @templates = (
 		qq|hello there|
 	],
 	[
-		\qq|hello [% hello.there %]/[% hello.you %]|,
-		 qq|hello silly/rabbit|
+		{sql => qq|hello [% "there" %]|, suffix => ', you'},
+		qq|hello there, you|
+	],
+	[
+		{sql => qq|hello [% hello.there %]/[% hello.you %]|},
+		qq|hello silly/rabbit|
+	],
+	[
+		{sql => qq|hello [% hello.there %]/[% hello.you %]|, prefix => 'why ', suffix => "\nhead."},
+		qq|why hello silly/rabbit\nhead.|,
 	],
 	[
 		{sql => $cond_while},
