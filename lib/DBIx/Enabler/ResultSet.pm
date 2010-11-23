@@ -91,8 +91,10 @@ sub execute {
 	my $sql = $self->{query}->sql;
 
 	# TODO: Time the query
-	my $sth = $self->{dbh}->prepare($sql)      or die $self->dbh->errstr;
-	$self->{executed} = $sth->execute(@params) or die $self->sth->errstr;
+	$self->{sth}      = $self->{dbh}->prepare($sql)
+		or croak $self->{dbh}->errstr;
+	$self->{executed} = $self->{sth}->execute(@params)
+		or croak $self->{sth}->errstr;
 	# TODO: stop timer
 
 	# guess primary key and column order if we don't have them
@@ -109,7 +111,6 @@ sub execute {
 		$self->{order} ||= order_from_sql($sql);
 	}
 
-	$self->{sth} = $sth;
 	return $self->{executed};
 }
 
