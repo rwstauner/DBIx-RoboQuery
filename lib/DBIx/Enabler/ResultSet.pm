@@ -173,6 +173,18 @@ sub execute {
 Returns a tree of hash refs like
 L<fetchall_hashref|DBI/fetchall_hashref>.
 
+Records will be stored (and considered unique)
+according to the 'key_columns' attribute.
+If more than one record has the same values for 'key_columns'
+the last record from the database will be returned.
+
+The I<preference> option can be used to determine which record
+to select instead of simply the last one received.
+
+See L<the preference() method|/preference> for more information,
+or L<the prefer() method on Query|DBIx::Enabler::Query/prefer>
+for how to write and store the preference rules.
+
 =cut
 
 sub hash {
@@ -241,10 +253,43 @@ sub _pass_through_args {
 	);
 }
 
-sub DESTROY {
-	my ($self) = @_;
-	$self->{sth}->finish() if $self->{sth};
+=method preference
+
+	$resultset->preference(["rule 1", "rule 2"], $record1, $record2);
+
+This is used internally by the L</hash>() method to determine which record
+it should choose when multiple records have the same key value(s).
+
+When L<< DBI's fetchall_hashref()|DBI/fetchall_hashref >>
+encounters multiple records having the same key field(s),
+the last encountered record is the one saved to the hash and returned.
+
+This "last one in wins" logic is preserved in this method
+for any records that cannot be determined by the specified preference rules.
+
+=cut
+
+sub preference {
+	my ($self, $rules, @records) = @_;
+	my $templater = $self->{query}->{tt};
+
+	foreach my $rule ( @$rules ){
+		my $found;
+		my $template = "[% IF $rule %]1[% ELSE %]0[% END %]";
+		# reverse records so that if any are equal the last one in wins
+		foreach my $record ( reverse @records ){
+			$found = '';
+			$templater->process(\$template, $record, \$found);
+			return $record if $found;
+			#$self->evaluate_preference($self->{query}{tt}, $rule, $record);
+		}
+	}
+
+	# last record is DBI compatibile plus its is often the newest record
+	return $records[-1];
 }
+
+# The DBI objects clean up after themselves, so DESTROY is not currently warranted
 
 1;
 
