@@ -292,6 +292,3 @@ sub preference {
 
 1;
 
-=for Pod::Coverage DESTROY
-
-=cut

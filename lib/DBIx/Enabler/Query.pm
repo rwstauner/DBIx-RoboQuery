@@ -205,3 +205,5 @@ sub sql {
 }
 
 1;
+
+=for Pod::Coverage result results
