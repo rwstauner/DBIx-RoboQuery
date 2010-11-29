@@ -135,7 +135,7 @@ if you use C<< resultset->hash() >> and multiple records are found
 for any given key field(s).
 
 The "rules" are strings that will be processed by the templating engine
-of the Query object (currently Template::Toolkit).
+of the Query object (currently L<Template::Toolkit|Template>).
 The record's fields will be available as variables.
 
 Each rule will be tested with each record and the first one to match
@@ -154,7 +154,7 @@ The rules are tested in the order they are set,
 and the records are processed in reverse order
 (to be compatible with the "last one in wins" logic of L<DBI/fetchall_hashref>).
 
-See L<DBIxEnabler::ResultSet/hash> and L<DBIxEnabler::ResultSet/preference>
+See L<DBIx::Enabler::ResultSet/hash> and L<DBIx::Enabler::ResultSet/preference>
 for more information.
 
 =cut
