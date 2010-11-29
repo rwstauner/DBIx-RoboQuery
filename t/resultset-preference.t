@@ -94,7 +94,8 @@ plan tests => scalar @tests;
 my $r = DBIx::Enabler::Query->new(sql => '')->resultset;
 foreach my $test ( @tests ){
 	my $p = shift @$test;
-	is_deeply($r->preference(@$test), $$test[$p], "expected record $p");
+	$r->{preferences} = shift @$test;
+	is_deeply($r->preference(@$test), $$test[$p-1], "expected record $p");
 }
 
 # TODO: test $query->prefer()

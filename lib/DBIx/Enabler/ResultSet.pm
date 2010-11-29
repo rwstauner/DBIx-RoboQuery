@@ -178,9 +178,8 @@ according to the 'key_columns' attribute.
 If more than one record has the same values for 'key_columns'
 the last record from the database will be returned.
 
-The I<preference> option can be used to determine which record
+The I<preferences> attribute can be used to determine which record
 to select instead of simply the last one received.
-
 See L<the preference() method|/preference> for more information,
 or L<the prefer() method on Query|DBIx::Enabler::Query/prefer>
 for how to write and store the preference rules.
@@ -255,7 +254,7 @@ sub _pass_through_args {
 
 =method preference
 
-	$resultset->preference(["rule 1", "rule 2"], $record1, $record2);
+	$resultset->preference($record1, $record2);
 
 This is used internally by the L</hash>() method to determine which record
 it should choose when multiple records have the same key value(s).
@@ -270,22 +269,22 @@ for any records that cannot be determined by the specified preference rules.
 =cut
 
 sub preference {
-	my ($self, $rules, @records) = @_;
+	my ($self, @records) = @_;
+	my $rules = $self->{preferences};
 	my $templater = $self->{query}->{tt};
 
 	foreach my $rule ( @$rules ){
-		my $found;
 		my $template = "[% IF $rule %]1[% ELSE %]0[% END %]";
 		# reverse records so that if any are equal the last one in wins
 		foreach my $record ( reverse @records ){
-			$found = '';
+			my $found = '';
 			$templater->process(\$template, $record, \$found);
 			return $record if $found;
 			#$self->evaluate_preference($self->{query}{tt}, $rule, $record);
 		}
 	}
 
-	# last record is DBI compatibile plus its is often the newest record
+	# last record is DBI compatibile plus it is often the newest record
 	return $records[-1];
 }
 

@@ -145,7 +145,7 @@ So considering the above example,
 the following code will return the second record since it will match
 one of the rules first.
 
-	$resultset->preference($rules,
+	$resultset->preference(
 		{color => 'blue',  smell => 'good'},
 		{color => 'green', smell => 'bad'}
 	);
