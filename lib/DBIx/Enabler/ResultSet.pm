@@ -189,7 +189,35 @@ for how to write and store the preference rules.
 sub hash {
 	my ($self) = @_;
 	$self->execute() if !$self->{executed};
-	return $self->fetchall_hashref($self->{key_columns});
+	# TODO: care if this is called more than once?
+	my $sth = $self->{sth};
+
+	# if preferences are undef or empty fetchall_hashref will be faster
+	return $sth->fetchall_hashref($self->{key_columns})
+		if !$self->{preferences} || !@{$self->{preferences}};
+
+	# dereference variables for simplicity/efficiency
+	my @key_columns  = @{ $self->{key_columns}  };
+	my @drop_columns = @{ $self->{drop_columns} };
+	my @all_columns  = (@key_columns, @{ $self->{non_key_columns} });
+
+	# we have to save the dropped columns so we can send them to preference()
+	my ($root, $dropped) = ({}, {});
+	while( my $row = $sth->fetchrow_hashref() ){
+		my ($hash, $drop) = ($root, $dropped);
+		# traverse hash tree to get to {key1 => {key2 => {record}}}
+		foreach ( @key_columns ){
+			$hash = ($hash->{ $row->{$_} } ||= {});
+			$drop = ($drop->{ $row->{$_} } ||= {});
+		}
+		# a few benchmarks suggest keys() may be faster than exists()
+		if( keys %$hash ){
+			$row = $self->preference({%$drop, %$hash}, $row);
+		}
+		@$drop{@drop_columns} = @$row{@drop_columns};
+		@$hash{@all_columns}  = @$row{@all_columns};
+	}
+	return $root;
 }
 
 =method key_columns
