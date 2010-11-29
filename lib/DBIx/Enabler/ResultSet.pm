@@ -283,12 +283,12 @@ sub preference {
 			#$self->evaluate_preference($self->{query}{tt}, $rule, $record);
 		}
 	}
-
 	# last record is DBI compatibile plus it is often the newest record
 	return $records[-1];
 }
 
-# The DBI objects clean up after themselves, so DESTROY is not currently warranted
+# The DBI objects clean up after themselves, so DESTROY not currently warranted
 
 1;
 
+=for stopwords DBI's
