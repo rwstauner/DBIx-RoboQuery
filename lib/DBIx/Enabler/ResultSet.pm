@@ -110,7 +110,7 @@ sub array {
 
 =method columns
 
-Return the columns of the recordset.
+Return the columns of the result set.
 
 This includes key and non-key columns
 and excludes dropped columns.
