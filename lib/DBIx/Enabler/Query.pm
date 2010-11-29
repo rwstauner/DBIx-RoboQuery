@@ -161,7 +161,7 @@ for more information.
 
 sub prefer {
 	my ($self) = shift;
-	push(@{ $self->{preference} ||= [] }, @_);
+	push(@{ $self->{preferences} ||= [] }, @_);
 }
 
 =method resultset
