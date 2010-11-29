@@ -174,8 +174,8 @@ Returns a tree of hash refs like
 L<fetchall_hashref|DBI/fetchall_hashref>.
 
 Records will be stored (and considered unique)
-according to the 'key_columns' attribute.
-If more than one record has the same values for 'key_columns'
+according to the I<key_columns> attribute.
+If more than one record has the same values for I<key_columns>
 the last record from the database will be returned.
 
 The I<preferences> attribute can be used to determine which record
