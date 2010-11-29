@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 22;
+use Test::More;
 use Test::MockDBI;
 use Test::MockObject;
 
@@ -51,3 +51,73 @@ is_deeply([$r->non_key_columns], [], 'non key columns w/o key, drop');
 $mock_sth->{NAME_lc} = [qw(foo boo)];
 is($r->execute(), 1, 'r->execute()');
 is_deeply([$r->non_key_columns], [], 'non key columns w/o key, drop');
+
+# change things up
+
+$opts->{key_columns} = [qw(foo lou)];
+$r = $rmod->new($query, $opts);
+isa_ok($r, $rmod);
+$mock_sth->{NAME_lc} = [qw(foo lou goo ber boo)];
+
+my %data = (
+	foo1lou1a => {foo => 'foo1', lou => 'lou1', goo => 'goo1', ber => 'ber1', boo => 'boo1'},
+	foo2lou2  => {foo => 'foo2', lou => 'lou2', goo => 'goo2', ber => 'ber2', boo => 'boo2'},
+	foo1lou2  => {foo => 'foo1', lou => 'lou2', goo => 'goo3', ber => 'ber3', boo => 'boo3'},
+	foo2lou1  => {foo => 'foo2', lou => 'lou1', goo => 'goo4', ber => 'ber4', boo => 'boo4'},
+	foo1lou1b => {foo => 'foo1', lou => 'lou1', goo => 'goo5', ber => 'ber5', boo => 'boo5'},
+	foo1lou1c => {foo => 'foo1', lou => 'lou1', goo => 'goo6', ber => 'ber6', boo => 'boo6'},
+);
+my @data = @data{qw(foo1lou1a foo2lou2 foo1lou2 foo2lou1 foo1lou1b foo1lou1c)};
+
+sub after_drop { my %r = %{$_[0]}; delete @r{ $opts->{drop_columns} }; \%r; }
+
+my $exp = {
+	foo1 => {
+		lou2 => after_drop($data{foo1lou2})
+	},
+	foo2 => {
+		lou2 => after_drop($data{foo2lou2}),
+		lou1 => after_drop($data{foo2lou1}),
+	}
+};
+
+my $reversed = 0;
+sub fetchall {
+	my ($root, $sth, $keys) = ({}, @_);
+	for my $row ( ordered_data() ){
+		my $h = $root;
+		$h = ($h->{ $row->{$_} } ||= {}) for @$keys;
+		@$h{keys %$row} = values %$row;
+		delete @$h{ $opts->{drop_columns} };
+	}
+	$root;
+};
+sub ordered_data { $reversed ? reverse @data : @data }
+sub set_data { $reversed = $_[0]; $mock_sth->set_series('fetchrow_hashref', ordered_data); }
+
+$mock_sth->mock('fetchall_hashref', \&fetchall);
+
+set_data(0);
+$exp->{foo1}{lou1} = after_drop($data{foo1lou1c});
+
+is_deeply($r->hash, $exp, 'hash returned expected w/ no preference');
+
+set_data(1);
+$exp->{foo1}{lou1} = after_drop($data{foo1lou1a});
+
+is_deeply($r->hash, $exp, 'hash returned expected w/ no preference');
+
+# now add preference
+$r->{preferences} = [q[ber == 'ber4'], q[boo == 'boo5']];
+
+set_data(1);
+$exp->{foo1}{lou1} = after_drop($data{foo1lou1b});
+
+is_deeply($r->hash, $exp, 'hash returned expected w/    preference');
+
+# change order, expect the same
+set_data(0);
+
+is_deeply($r->hash, $exp, 'hash returned expected w/    preference');
+
+done_testing;
