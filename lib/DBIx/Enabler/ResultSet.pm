@@ -271,6 +271,11 @@ for any records that cannot be determined by the specified preference rules.
 sub preference {
 	my ($self, @records) = @_;
 	my $rules = $self->{preferences};
+
+	# return last record if there are no preferences
+	return $records[-1]
+		if !$rules || !@$rules;
+
 	my $templater = $self->{query}->{tt};
 
 	foreach my $rule ( @$rules ){
