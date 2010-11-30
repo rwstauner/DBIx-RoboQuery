@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+use FindBin ();
+use lib "$FindBin::Bin/lib";
+use THelper;
 
 use File::Temp 0.22;
 my $tmp = File::Temp->new(UNLINK => 1);
@@ -58,14 +61,9 @@ my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
 isa_ok($mod->new(sql => 'SQL'), $mod);
 
-SKIP: {
-	my $test_mod = 'Test::Exception';
-	eval "require ${test_mod}; ${test_mod}->import()";
-	skip("$test_mod required to test exceptions", 2) if $@;
-
+	# one of sql or file but not both
 	throws_ok(sub { $mod->new(sql => 'SQL', file => '/dev/null') }, qr'both', 'not both');
 	throws_ok(sub { $mod->new() }, qr'one of', 'one');
-}
 
 #my $config = test_config;
 my $always = {hello => {there => 'silly', you => 'rabbit'}};
