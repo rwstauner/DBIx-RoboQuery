@@ -265,8 +265,6 @@ Return a list of the primary key columns from the query.
 
 sub key_columns {
 	my ($self) = @_;
-	croak('Columns not known until after the statement has executed')
-		unless @{$self->{key_columns}} || $self->{executed};
 	return @{$self->{key_columns}};
 }
 
