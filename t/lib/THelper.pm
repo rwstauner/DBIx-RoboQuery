@@ -1,22 +1,25 @@
+use strict;
+use warnings;
 package THelper;
 
-sub no_t_ex (&@) {
+our $ExModule = 'Test::Exceptions';
+
+sub no_ex_module (&@) {
 	SKIP: {
 		package main;
-		skip("$test_mod required to test exceptions", 1);
+		skip("$THelper::ExModule required to test exceptions", 1);
 	}
 }
 
 {
-	my $test_mod = 'Test::Exceptions';
 	my @subs = qw(
 		throws_ok
 	);
 	package main;
-	eval "require ${test_mod}; ${test_mod}->import(); 1";
+	eval "require $THelper::ExModule; $THelper::ExModule->import(); 1";
 	if( $@ ){
 		no strict 'refs';
-		*$_ = *THelper::no_t_ex for @subs;
+		*$_ = *THelper::no_ex_module for @subs;
 	}
 }
 

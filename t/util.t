@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use DBIx::Enabler::Util qw(
 	order_from_sql
