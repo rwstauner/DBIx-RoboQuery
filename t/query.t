@@ -52,7 +52,7 @@ my @templates = (
 	]
 );
 
-plan tests => @templates + 2 + 2 + 1 + 3;
+plan tests => @templates + 2 + 2 + 1 + 4;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
@@ -84,3 +84,5 @@ $query->prefer('hello', 'goodbye');
 is_deeply($query->{preferences}, ['hello', 'goodbye'], 'preferences set with prefer()');
 $query->prefer('see you later');
 is_deeply($query->{preferences}, ['hello', 'goodbye', 'see you later'], 'preferences set with prefer()');
+# passed to resultset
+is_deeply($query->resultset->{preferences}, ['hello', 'goodbye', 'see you later'], 'preferences set with prefer()');

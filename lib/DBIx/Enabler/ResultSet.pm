@@ -314,6 +314,7 @@ sub _pass_through_args {
 		drop_columns
 		hash_key_name
 		key_columns
+		preferences
 		order
 	);
 }
