@@ -118,4 +118,28 @@ set_data(0);
 
 is_deeply($r->hash, $exp, 'hash returned expected w/    preference');
 
+# check columns
+
+my @column_tests = (
+	[ [qw(foo lou)], [qw(goo ber boo)],     [] ],
+	[ [qw(foo lou)], [qw(goo ber)],         [qw(boo)] ],
+	[ [qw(foo)],     [qw(lou goo ber)],     [qw(boo)] ],
+	[ [qw(foo)],     [qw(lou goo ber boo)], [] ],
+	[ [],            [qw(foo lou goo ber boo)], [] ],
+	[ [],            [],                    [qw(foo lou goo ber boo)] ],
+);
+
+foreach my $test ( @column_tests ){
+	$opts->{key_columns}  = $$test[0];
+	my $all_columns       = [map { @$_ } @$test[0,1]];
+	$opts->{drop_columns} = $$test[2];
+	$mock_sth->{NAME_lc}  = [map { @$_ } @$test];
+
+	$r = $rmod->new($query, $opts);
+	$r->execute();
+	is_deeply([$r->key_columns],  $$test[0],    'key  columns');
+	is_deeply([$r->columns],      $all_columns, '     columns');
+	is_deeply([$r->drop_columns], $$test[2],    'drop columns');
+}
+
 done_testing;
