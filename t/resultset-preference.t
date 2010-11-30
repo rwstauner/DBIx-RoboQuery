@@ -89,13 +89,21 @@ my @tests = (
 	]
 );
 
-plan tests => scalar @tests;
+plan tests => scalar @tests * 3;
 
 my $r = DBIx::Enabler::Query->new(sql => '')->resultset;
 foreach my $test ( @tests ){
 	my $p = shift @$test;
-	$r->{preferences} = shift @$test;
-	is_deeply($r->preference(@$test), $$test[$p-1], "expected record $p");
-}
+	my $prefs = shift @$test;
 
-# TODO: test $query->prefer()
+	# white box hack
+	$r->{preferences} = $prefs;
+	is_deeply($r->preference(@$test), $$test[$p-1], "expected record $p");
+
+	# api test
+	my $q = DBIx::Enabler::Query->new(sql => '');
+	$q->prefer(@$prefs);
+	my $r2 = $q->resultset;
+	is_deeply($r2->{preferences}, $prefs, 'preferences ready');
+	is_deeply($r2->preference(@$test), $$test[$p-1], "expected record $p");
+}
