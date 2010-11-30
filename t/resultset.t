@@ -1,14 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::MockDBI;
 use Test::MockObject;
 
-my $dbh = Test::MockDBI->get_instance;
 my $qmod = 'DBIx::Enabler::Query';
 
 require_ok($qmod);
-my $query = $qmod->new(sql => "SELECT * FROM table1", dbh => $dbh);
+my $query = $qmod->new(sql => "SELECT * FROM table1");
 isa_ok($query, $qmod);
 
 my $rmod = 'DBIx::Enabler::ResultSet';
