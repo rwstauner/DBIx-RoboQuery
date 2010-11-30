@@ -52,7 +52,7 @@ my @templates = (
 	]
 );
 
-plan tests => @templates + 5;
+plan tests => @templates + 2 + 2 + 1 + 3;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
@@ -77,3 +77,10 @@ foreach my $template ( @templates ){
 }
 
 isa_ok($mod->new(sql => "hi.")->results, 'DBIx::Enabler::ResultSet');
+
+my $query = $mod->new(sql => ':-P');
+is_deeply($query->{preferences}, undef, 'no preferences');
+$query->prefer('hello', 'goodbye');
+is_deeply($query->{preferences}, ['hello', 'goodbye'], 'preferences set with prefer()');
+$query->prefer('see you later');
+is_deeply($query->{preferences}, ['hello', 'goodbye', 'see you later'], 'preferences set with prefer()');
