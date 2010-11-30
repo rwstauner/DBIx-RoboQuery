@@ -285,6 +285,10 @@ sub non_key_columns {
 	my ($self) = @_;
 	croak('Columns not known until after the statement has executed')
 		unless $self->{executed};
+	# An empty array should mean that the rest are key or drop columns.
+	# If not defined, there's a problem.
+	croak('Columns unknown.  Was this a SELECT?')
+		unless $self->{non_key_columns};
 	return @{$self->{non_key_columns}};
 }
 
