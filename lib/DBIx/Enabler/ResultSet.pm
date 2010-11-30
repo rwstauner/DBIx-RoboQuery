@@ -42,6 +42,8 @@ If they do not exist, they will be looked for on the Query object.
 =for :list
 * I<dbh>
 A database handle (the return of C<< DBI->connect() >>)
+* I<default_slice>
+The default slice of the record returned from the L</array>() method.
 * I<drop_columns>
 An arrayref of column names to be dropped (ignored) from the result set
 * I<key_columns>
@@ -59,6 +61,7 @@ sub new {
 	my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
 	my $self = {
 		query => $query,
+		default_slice => {},
 	};
 
 	bless $self, $class;
@@ -123,13 +126,19 @@ L<DBI's fetchall_arrayref()|DBI/fetchall_arrayref>.
 B<However>, if no arguments are supplied, an empty C<{}> will be sent
 to C<fetchall_arrayref> to make it return an array of hash refs.
 
+If this deviation is undesired,
+you can set I<default_slice> to C<[]> to return to the DBI default.
+Like many options this can be set on the Query or the ResultSet.
+
+	Query->new(default_slice => []);
+
 =cut
 
 sub array {
 	my ($self, @args) = @_;
 
 	# default to an array of hashrefs if no arguments are given
-	@args = ( {} )
+	@args = $self->{default_slice}
 		unless @args;
 
 	$self->execute() if !$self->{executed};
@@ -301,6 +310,7 @@ This is mostly here to allow subclasses to easily overwrite it.
 sub _pass_through_args {
 	qw(
 		dbh
+		default_slice
 		drop_columns
 		hash_key_name
 		key_columns
