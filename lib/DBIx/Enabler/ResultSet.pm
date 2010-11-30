@@ -192,11 +192,7 @@ sub execute {
 		or croak $self->{sth}->errstr;
 	# TODO: stop timer
 
-	# guess primary key and column order if we don't have them
 	if( my $columns = $self->{sth}->{ $self->{hash_key_name} } ){
-		$self->{key_columns} = [ $columns->[0] ]
-			if !@{$self->{key_columns}};
-
 		# get the "other" columns (not keys, not dropped)
 		my %other = map { $_ => 1 }
 			map { @{$self->{$_}} } qw(key_columns drop_columns);
@@ -221,6 +217,14 @@ See L<the preference() method|/preference> for more information,
 or L<the prefer() method on Query|DBIx::Enabler::Query/prefer>
 for how to write and store the preference rules.
 
+An error is thrown if I<key_columns> is empty.
+L<DBI/fetchall_hashref> doesn't check the length of key_columns.
+An empty array ends up returning a single hash (the last row)
+instead of the hash tree which can be very confusing
+and surely is not desired.
+There are more efficient ways to get the last row
+if that's really all you want.
+
 =cut
 
 sub hash {
@@ -229,12 +233,13 @@ sub hash {
 	# TODO: care if this is called more than once?
 	my $sth = $self->{sth};
 
+	my @key_columns  = @{ $self->{key_columns}  }
+		or croak('Cannot use hash() with an empty key_columns attribute');
+
 	# if preferences are undef or empty fetchall_hashref will be faster
-	return $sth->fetchall_hashref($self->{key_columns})
+	return $sth->fetchall_hashref(\@key_columns)
 		if !$self->{preferences} || !@{$self->{preferences}};
 
-	# dereference variables for simplicity/efficiency
-	my @key_columns  = @{ $self->{key_columns}  };
 	my @drop_columns = @{ $self->{drop_columns} };
 	my @all_columns  = (@key_columns, @{ $self->{non_key_columns} });
 

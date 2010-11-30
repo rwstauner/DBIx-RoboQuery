@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use Test::More;
 use Test::MockObject;
+use FindBin ();
+use lib "$FindBin::Bin/lib";
+use THelper;
 
 my $qmod = 'DBIx::Enabler::Query';
 
@@ -141,5 +144,11 @@ foreach my $test ( @column_tests ){
 	is_deeply([$r->columns],      $all_columns, '     columns');
 	is_deeply([$r->drop_columns], $$test[2],    'drop columns');
 }
+
+$opts->{key_columns} = [];
+$opts->{drop_columns} = [];
+$r = $rmod->new($query, $opts);
+
+throws_ok(sub { $r->hash }, qr/key_columns/, 'key_columns required for hash()');
 
 done_testing;
