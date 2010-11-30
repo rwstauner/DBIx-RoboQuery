@@ -94,18 +94,46 @@ sub new {
 
 =method array
 
-	$resultset->array();   # array of arrays
-	$resultset->array({}); # array of hashrefs
-
 Calls L<fetchall_arrayref|DBI/fetchall_arrayref>(@_)
 on the DBI statement handle (passing any supplied arguments).
+
+Like C<fetchall_arrayref>,
+this method will take a slice as the first argument.
+
+B< * NOTE * > :
+B<Unlike> C<fetchall_arrayref>,
+B<< With no arguments, or if the first argument is undefined, >>
+B<< the method will act as if passed an empty hash ref. >>
+
+To send the maximum number of desired rows it must be passed
+as the second argument.
+
+	$resultset->array();        # default is an array of hashrefs
+	$resultset->array({});      # same as above
+	$resultset->array([]);      # array of arrays
+	$resultset->array([0]);     # array of arrays with only first column
+	$resultset->array({k=>1});  # array of hashes with only column 'k'
+
+	$resultset->array({}, 5);   # array of hashrefs,  no more than 5
+	$resultset->array([], 5);   # array of arrayrefs, no more than 5
+
+B< To Reiterate >:
+This method takes the same two possible arguments as
+L<DBI's fetchall_arrayref()|DBI/fetchall_arrayref>.
+B<However>, if no arguments are supplied, an empty C<{}> will be sent
+to C<fetchall_arrayref> to make it return an array of hash refs.
 
 =cut
 
 sub array {
-	my ($self) = shift;
+	my ($self, @args) = @_;
+
+	# default to an array of hashrefs if no arguments are given
+	@args = ( {} )
+		unless @args;
+
 	$self->execute() if !$self->{executed};
-	$self->{sth}->fetchall_arrayref(@_);
+	return $self->{sth}->fetchall_arrayref(@args);
 }
 
 =method columns
