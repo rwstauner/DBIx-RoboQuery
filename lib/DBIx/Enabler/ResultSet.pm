@@ -43,12 +43,12 @@ If they do not exist, they will be looked for on the Query object.
 * I<dbh>
 A database handle (the return of C<< DBI->connect() >>)
 * I<default_slice>
-The default slice of the record returned from the L</array>() method.
+The default slice of the record returned from the L</array> method.
 * I<drop_columns>
 An arrayref of column names to be dropped (ignored) from the result set
 * I<key_columns>
 An arrayref of column names that define 'unique' records;
-This is used by the L</hash>() method.  See also L<DBI/fetchall_hashref>.
+This is used by the L</hash> method.  See also L<DBI/fetchall_hashref>.
 * I<order>
 An arrayref of column names to specify the sort order of the query;
 If not provided this will be guessed from the SQL statement.
@@ -122,7 +122,7 @@ as the second argument.
 
 B< To Reiterate >:
 This method takes the same two possible arguments as
-L<DBI's fetchall_arrayref()|DBI/fetchall_arrayref>.
+L<DBI/fetchall_arrayref>.
 B<However>, if no arguments are supplied, an empty C<{}> will be sent
 to C<fetchall_arrayref> to make it return an array of hash refs.
 
@@ -204,7 +204,7 @@ sub execute {
 =method hash
 
 Returns a tree of hash refs like
-L<fetchall_hashref|DBI/fetchall_hashref>.
+L<DBI/fetchall_hashref>.
 
 Records will be stored (and considered unique)
 according to the I<key_columns> attribute.
@@ -214,7 +214,7 @@ the last record from the database will be returned.
 The I<preferences> attribute can be used to determine which record
 to select instead of simply the last one received.
 See L<the preference() method|/preference> for more information,
-or L<the prefer() method on Query|DBIx::Enabler::Query/prefer>
+or L<DBIx::Enabler::Query/prefer>
 for how to write and store the preference rules.
 
 An error is thrown if I<key_columns> is empty.
@@ -333,7 +333,7 @@ sub _pass_through_args {
 This is used internally by the L</hash>() method to determine which record
 it should choose when multiple records have the same key value(s).
 
-When L<< DBI's fetchall_hashref()|DBI/fetchall_hashref >>
+When L<DBI/fetchall_hashref>
 encounters multiple records having the same key field(s),
 the last encountered record is the one saved to the hash and returned.
 
