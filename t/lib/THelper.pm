@@ -2,7 +2,9 @@ use strict;
 use warnings;
 package THelper;
 
-our $ExModule = 'Test::Exceptions';
+# NOTE: Would use Test::Fatal if we were already using Try::Tiny
+
+our $ExModule = 'Test::Exception';
 
 sub no_ex_module (&@) {
 	SKIP: {
