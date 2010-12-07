@@ -1,4 +1,4 @@
-=head1 DESCRIPTION
+=head1 DBIx::Enabler
 
 The modules in this namespace are meant to enable
 the user to do more than basic DBI programming.
