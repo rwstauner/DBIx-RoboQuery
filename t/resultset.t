@@ -70,7 +70,7 @@ my %data = (
 );
 my @data = @data{qw(foo1lou1a foo2lou2 foo1lou2 foo2lou1 foo1lou1b foo1lou1c)};
 
-sub after_drop { my %r = %{$_[0]}; delete @r{ $opts->{drop_columns} }; \%r; }
+sub after_drop { my %r = %{$_[0]}; my @d = $opts->{drop_columns}; @d = @{$d[0]} if ref $d[0]; delete @r{ @d }; \%r; }
 
 my $exp = {
 	foo1 => {
