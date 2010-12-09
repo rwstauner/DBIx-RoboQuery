@@ -142,6 +142,22 @@ sub array {
 		unless @args;
 
 	$self->execute() if !$self->{executed};
+
+	croak('Columns unknown.  Was this a SELECT?')
+		unless $self->{all_columns};
+
+	if( @args ){
+		# if the slice is empty, fill it with the non-drop_columns
+		my $slice = $args[0];
+		if( ref($slice) eq 'HASH' and !keys(%$slice) ){
+			$slice->{$_} = 1 for $self->columns;
+		}
+		elsif( ref($slice) eq 'ARRAY' and !@$slice ){
+			my @col  = @{$self->{all_columns}};
+			my %drop = map { $_ => 1 } @{ $self->{drop_columns} };
+			push(@$slice, grep { !$drop{ $col[$_] } } 0 .. $#col);
+		}
+	}
 	return $self->{sth}->fetchall_arrayref(@args);
 }
 
@@ -238,28 +254,40 @@ sub hash {
 	my @key_columns  = @{ $self->{key_columns}  }
 		or croak('Cannot use hash() with an empty key_columns attribute');
 
-	# if preferences are undef or empty fetchall_hashref will be faster
-	return $sth->fetchall_hashref(\@key_columns)
-		if !$self->{preferences} || !@{$self->{preferences}};
+	# We could just return $sth->fetchall_hashref(\@key_columns) if there are
+	# no preferences but we can't slice out the dropped columns that way.
 
 	my @drop_columns = @{ $self->{drop_columns} };
-	my @all_columns  = (@key_columns, @{ $self->{non_key_columns} });
+	my @columns = (@key_columns, @{ $self->{non_key_columns} });
 
 	# we have to save the dropped columns so we can send them to preference()
 	my ($root, $dropped) = ({}, {});
-	while( my $row = $sth->fetchrow_hashref() ){
-		my ($hash, $drop) = ($root, $dropped);
-		# traverse hash tree to get to {key1 => {key2 => {record}}}
-		foreach ( @key_columns ){
-			$hash = ($hash->{ $row->{$_} } ||= {});
-			$drop = ($drop->{ $row->{$_} } ||= {});
+
+	# check for preferences once... if there are none, do the quick version
+	if( !$self->{preferences} || !@{$self->{preferences}} ){
+		# we can't honor drop_columns with fetchall_hashref(), so fake it
+		while( my $row = $sth->fetchrow_hashref() ){
+			my $hash = $root;
+			$hash = ($hash->{ $row->{$_} } ||= {}) for @key_columns;
+			@$hash{@columns}  = @$row{@columns};
 		}
-		# a few benchmarks suggest keys() may be faster than exists()
-		if( keys %$hash ){
-			$row = $self->preference({%$drop, %$hash}, $row);
+	}
+	else {
+		while( my $row = $sth->fetchrow_hashref() ){
+			my ($hash, $drop) = ($root, $dropped);
+			# traverse hash tree to get to {key1 => {key2 => {record}}}
+			foreach ( @key_columns ){
+				$hash = ($hash->{ $row->{$_} } ||= {});
+				$drop = ($drop->{ $row->{$_} } ||= {});
+			}
+			# if there's already a record there (not an empty hash)
+			# (a few benchmarks suggest keys() may be faster than exists())
+			if( keys %$hash ){
+				$row = $self->preference({%$drop, %$hash}, $row);
+			}
+			@$drop{@drop_columns} = @$row{@drop_columns};
+			@$hash{@columns}  = @$row{@columns};
 		}
-		@$drop{@drop_columns} = @$row{@drop_columns};
-		@$hash{@all_columns}  = @$row{@all_columns};
 	}
 	return $root;
 }
