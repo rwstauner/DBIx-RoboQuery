@@ -193,6 +193,8 @@ sub execute {
 	# TODO: stop timer
 
 	if( my $columns = $self->{sth}->{ $self->{hash_key_name} } ){
+		# save the full order for later (but break the reference)
+		$self->{all_columns} = [@$columns];
 		# get the "other" columns (not keys, not dropped)
 		my %other = map { $_ => 1 }
 			map { @{$self->{$_}} } qw(key_columns drop_columns);
