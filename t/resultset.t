@@ -151,4 +151,40 @@ $r = $rmod->new($query, $opts);
 
 throws_ok(sub { $r->hash }, qr/key_columns/, 'key_columns required for hash()');
 
+SKIP: {
+	# To test that the slice we're supplying to fetchall_arrayref is correct
+	# we need to use the *real* DBI fetchall_arrayref, so try to use DBD::Mock
+	eval "require DBI; require DBD::Mock";
+	# save the error if there was one
+	my $e = $@;
+
+	# figure out how many tests we're running or skipping
+	my @drop_tests = (
+		[],
+		[qw(boo)],
+		[qw(goo ber)],
+	);
+
+	skip('DBD::Mock not installed, skipping array() tests', scalar @drop_tests) if $e;
+
+	$opts->{dbh} = my $dbdmock = DBI->connect('dbi:Mock:', qw(u p));
+
+	my @datakeys = keys %{$data[0]};
+	foreach my $test ( @drop_tests ){
+		$opts->{drop_columns} = $test;
+		my @nondrop = do { my %drop = map { $_ => 1 } @$test; grep { !$drop{$_} } @datakeys; };
+		foreach my $fetch (
+			['hash',  {}, [map {  after_drop($_) } @data]],
+			['array', [], [map { [@$_{@nondrop}] } @data]]
+		){
+			my ($type, $slice, $rows) = @$fetch;
+			# Doing this doesn't tell me anything: [\@datakeys, map { [@{after_drop($_)}{ @datakeys }] } @data].
+			# Rely on DBI's method to tell me if the slice specification is accurate.
+			$dbdmock->{mock_add_resultset} = [\@datakeys, map { [@{$_}{ @datakeys }] } @data];
+			$r = $rmod->new($query, $opts);
+			is_deeply($r->array($slice), $rows, "array() returned expected $type slices");
+		}
+	}
+}
+
 done_testing;
