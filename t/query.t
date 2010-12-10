@@ -1,8 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use FindBin ();
-use lib "$FindBin::Bin/lib";
+use lib 't/lib';
 use THelper;
 
 use File::Temp 0.22;

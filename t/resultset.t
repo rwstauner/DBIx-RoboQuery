@@ -2,8 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::MockObject;
-use FindBin ();
-use lib "$FindBin::Bin/lib";
+use lib 't/lib';
 use THelper;
 
 my $qmod = 'DBIx::Enabler::Query';
