@@ -401,3 +401,12 @@ sub preference {
 1;
 
 =for stopwords DBI's
+
+=head1 CAVEATS
+
+While there is I<some> error checking,
+the module probably assumes you're setting L<DBI/RaiseError>
+to true on your I<dbh>.
+
+If you don't use L<DBI/RaiseError>, and you experience problems,
+please let me know (submit a patch or a bug report).
