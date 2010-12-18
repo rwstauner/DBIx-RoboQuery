@@ -146,6 +146,7 @@ sub array {
 	croak('Columns unknown.  Was this a SELECT?')
 		unless $self->{all_columns};
 
+	my @tr_args = ();
 	if( @args ){
 		# if the slice is empty, fill it with the non-drop_columns
 		my $slice = $args[0];
@@ -156,9 +157,15 @@ sub array {
 			my @col  = @{$self->{all_columns}};
 			my %drop = map { $_ => 1 } @{ $self->{drop_columns} };
 			push(@$slice, grep { !$drop{ $col[$_] } } 0 .. $#col);
+			# set the first (only) element to an arrayref of column names
+			@tr_args = ( [@col[@$slice]] );
 		}
 	}
-	return $self->{sth}->fetchall_arrayref(@args);
+	my $rows = $self->{sth}->fetchall_arrayref(@args);
+	# if @tr_args is empty, the hash will be the only argument sent
+	return $self->{transformations}
+		? [map { $self->{transformations}->transform(@tr_args, $_) } @$rows]
+		: $rows;
 }
 
 =method columns
