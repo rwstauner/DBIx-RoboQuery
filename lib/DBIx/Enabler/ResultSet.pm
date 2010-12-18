@@ -263,17 +263,33 @@ sub hash {
 	# we have to save the dropped columns so we can send them to preference()
 	my ($root, $dropped) = ({}, {});
 
+	# NOTE: It seemed to me more powerful to transform the data upon fetch
+	# rather than upon storage in the tree: it gives you the option of
+	# pre-transforming the keys to adjust the way the tree is built
+	# and lets you know what to expect in the preference rules.
+	# Plus it was easier to implement.
+	# I can't think of a reason to want transform the key columns in the record
+	# but not the tree (ex: {A => {B => {k1 => 'a', k2 => 'b'}}})
+	# If you want un-adultered data for preferences you can select the column
+	# again with an alias and then drop it.
+
+	my $tr = $self->{transformations};
+	my $fetchrow = $tr
+		# don't attempt to transform if the fetch returned undef
+		? sub { my $r = $sth->fetchrow_hashref(); $r && $tr->transform($r); }
+		: sub {         $sth->fetchrow_hashref(); };
+
 	# check for preferences once... if there are none, do the quick version
 	if( !$self->{preferences} || !@{$self->{preferences}} ){
 		# we can't honor drop_columns with fetchall_hashref(), so fake it
-		while( my $row = $sth->fetchrow_hashref() ){
+		while( my $row = $fetchrow->() ){
 			my $hash = $root;
 			$hash = ($hash->{ $row->{$_} } ||= {}) for @key_columns;
 			@$hash{@columns}  = @$row{@columns};
 		}
 	}
 	else {
-		while( my $row = $sth->fetchrow_hashref() ){
+		while( my $row = $fetchrow->() ){
 			my ($hash, $drop) = ($root, $dropped);
 			# traverse hash tree to get to {key1 => {key2 => {record}}}
 			foreach ( @key_columns ){
