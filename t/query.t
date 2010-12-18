@@ -38,6 +38,10 @@ my @templates = (
 		qq|why hello silly/rabbit\nhead.|,
 	],
 	[
+		{sql => qq|[% MACRO pref(f) CALL query.prefer(f); pref('hello IS NULL') -%]\n[% pref('t'); query.preferences.join() %]|},
+		qq|hello IS NULL t|,
+	],
+	[
 		{sql => $cond_while},
 		qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
 		{account_numbers => [' D001 ', 'D002']}
