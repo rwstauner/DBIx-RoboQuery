@@ -186,4 +186,48 @@ SKIP: {
 	}
 }
 
+# test transform
+
+my @trdata = (
+	{id => 'a1', hello => ' hello  there ', name => ' ucased '},
+	{id => 'B1', hello => ' hello  again ', name => ' u  cased '},
+	{id => 'b1', hello => ' hello  three ', name => ' u  case d '},
+);
+
+my $trdatarows = [
+	{id => 'A1', hello => 'hello there', name => 'UCASED'},
+	{id => 'B1', hello => 'hello again', name => 'U CASED'},
+	{id => 'B1', hello => 'hello three', name => 'U CASE D'},
+];
+
+my $trdatatree = {
+	A1 => $trdatarows->[0],
+	B1 => $trdatarows->[2],
+};
+
+my $arraysfromhashes = sub { [map { [@$_{qw(id hello name)}] } @_] };
+
+$query->transform('trim', groups => 'non_key');
+$query->transform('squeeze', groups => 'non_key');
+$query->transform('uc',   fields => [qw(id name)]);
+
+# reset dbh, sth
+$mock_sth->{NAME_lc} = [qw(id hello name)];
+@$opts{qw(key_columns dbh)} = ('id', $mock_dbh);
+
+# array of arrayrefs
+$mock_sth->set_series('fetchall_arrayref', $arraysfromhashes->(@trdata));
+$r = $rmod->new($query, $opts);
+is_deeply($r->array([]), $arraysfromhashes->(@$trdatarows), 'array returns transformed data');
+
+# array of hashrefs
+$mock_sth->set_series('fetchall_arrayref', [@trdata]);
+$r = $rmod->new($query, $opts);
+is_deeply($r->array, $trdatarows, 'array returns transformed data');
+
+# hash of hashrefs
+$mock_sth->set_series('fetchrow_hashref', @trdata);
+$r = $rmod->new($query, $opts);
+is_deeply($r->hash,  $trdatatree, 'hash returns transformed data');
+
 done_testing;
