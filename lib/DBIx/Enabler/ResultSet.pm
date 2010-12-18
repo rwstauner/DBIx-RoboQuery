@@ -222,6 +222,15 @@ sub execute {
 		my %other = map { $_ => 1 }
 			map { @{$self->{$_}} } qw(key_columns drop_columns);
 		$self->{non_key_columns} = [ grep { !$other{$_} } @$columns ];
+
+		if( my $transformations = $self->{transformations} ){
+			foreach my $groups (
+				[key => $self->{key_columns}],
+				[non_key => $self->{non_key_columns}],
+			){
+				$transformations->group(@$groups);
+			}
+		}
 	}
 
 	return $self->{executed};
