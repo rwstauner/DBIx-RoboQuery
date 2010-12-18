@@ -42,6 +42,10 @@ my @templates = (
 		qq|hello IS NULL t|,
 	],
 	[
+		{sql => qq|[% CALL query.transform('trim', 'fields', ['address']); GET query.transformations.queue.first.first %]|},
+		qq|trim|,
+	],
+	[
 		{sql => $cond_while},
 		qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
 		{account_numbers => [' D001 ', 'D002']}
