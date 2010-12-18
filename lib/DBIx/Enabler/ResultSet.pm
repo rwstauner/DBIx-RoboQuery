@@ -353,6 +353,7 @@ sub _pass_through_args {
 		key_columns
 		preferences
 		order
+		transformations
 	);
 }
 

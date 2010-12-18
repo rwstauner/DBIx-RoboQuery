@@ -17,6 +17,7 @@ use strict;
 use warnings;
 
 use Carp qw(carp croak);
+use Data::Transform::Named::Stackable ();
 use DBIx::Enabler ();
 use DBIx::Enabler::ResultSet ();
 use Template 2.22; # Template Toolkit
@@ -111,6 +112,7 @@ sub _pass_through_args {
 		default_slice
 		prefix
 		suffix
+		transformations
 		variables
 	);
 }
@@ -206,6 +208,22 @@ sub sql {
 	$self->{tt}->process(\$sql, $vars, \$output)
 		or die($self->{tt}->error(), "\n");
 	return $output;
+}
+
+=method transform
+
+	$query->transform($name, $type, [qw(fields)], @arguments);
+
+Add a transformation to be applied to the result data.
+
+See L<Data::Transform::Named::Stackable/push>.
+
+=cut
+
+sub transform {
+	my ($self, @tr) = @_;
+	( $self->{transformations} ||=
+		Data::Transform::Named::Stackable->new() )->push(@tr);
 }
 
 1;
