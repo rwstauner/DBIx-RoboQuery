@@ -227,6 +227,9 @@ sub execute {
 			foreach my $groups (
 				[key => $self->{key_columns}],
 				[non_key => $self->{non_key_columns}],
+				# aliases
+				[key_columns => {in => 'key'}],
+				[non_key_columns => {in => 'non_key'}],
 			){
 				$transformations->group(@$groups);
 			}
