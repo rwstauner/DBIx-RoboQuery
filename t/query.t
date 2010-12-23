@@ -62,7 +62,8 @@ my @templates = (
 	]
 );
 
-plan tests => @templates + 2 + 2 + 1 + 4;
+# (require + isa Q) + throws + templates + (key_columns) + (isa R) + preferences
+plan tests => 2 + 2 + @templates + 4 + 1 + 4;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
@@ -79,6 +80,16 @@ foreach my $template ( @templates ){
 	my( $in, $out, $vars ) = @$template;
 	my $q = $mod->new({%$in, variables => $always});
 	is($q->sql($vars), $out, 'template');
+}
+
+{
+	# specifically test setting key_columns from template
+	my $q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %][% query.key_columns.join %]|);
+	is($q->sql, 'goo', 'key_columns set and printed');
+	is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
+	$q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %]|);
+	is($q->sql, '', 'nothing printed');
+	is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
 }
 
 isa_ok($mod->new(sql => "hi.")->results, 'DBIx::Enabler::ResultSet');
