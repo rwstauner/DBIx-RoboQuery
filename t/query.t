@@ -62,8 +62,8 @@ my @templates = (
 	]
 );
 
-# (require + isa Q) + throws + templates + (key_columns) + (isa R) + preferences
-plan tests => 2 + 2 + @templates + 4 + 1 + 4;
+# (require + isa Q) + throws + templates + (key_columns) + (process once) + (isa R) + preferences
+plan tests => 2 + 2 + @templates + 4 + 12 + 1 + 4;
 
 my $mod = 'DBIx::Enabler::Query';
 require_ok($mod);
@@ -90,6 +90,28 @@ foreach my $template ( @templates ){
 	$q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %]|);
 	is($q->sql, '', 'nothing printed');
 	is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
+}
+
+{
+	# only process the template once
+	my $i = 10;
+	my $q = $mod->new(sql => qq|[% boo %]hi|, variables => {boo => sub { ++$i }});
+	is($q->sql, '11hi', 'sql');
+	is_deeply($i, 11, 'only process once');
+	is($q->sql, '11hi', 'sql');
+	is_deeply($i, 11, 'only process once');
+	# hack... remove the cache var to show what would happen w/o
+	delete $q->{processed_sql};
+	is($q->sql, '12hi', 'sql');
+	is_deeply($i, 12, 'process again after deleting the cache');
+	is($q->sql, '12hi', 'sql');
+	is_deeply($i, 12, 'only process once');
+
+	$q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|);
+	is($q->sql, 'hi', 'sql');
+	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
+	is($q->sql, 'hi', 'sql');
+	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
 }
 
 isa_ok($mod->new(sql => "hi.")->results, 'DBIx::Enabler::ResultSet');

@@ -204,9 +204,19 @@ sub sql {
 	my ($self, $vars) = @_;
 	$vars ||= {};
 	my $output;
-	my $sql = $self->pre_process_sql($self->{template});
-	$self->{tt}->process(\$sql, $vars, \$output)
-		or die($self->{tt}->error(), "\n");
+
+	# Cache the result to avoid duplicating function calls,
+	# directives, template logic, etc.
+	# Plus it shouldn't need to be run more than once.
+	if( exists $self->{processed_sql} ){
+		$output = $self->{processed_sql};
+	}
+	else {
+		my $sql = $self->pre_process_sql($self->{template});
+		$self->{tt}->process(\$sql, $vars, \$output)
+			or die($self->{tt}->error(), "\n");
+		$self->{processed_sql} = $output;
+	}
 	return $output;
 }
 
