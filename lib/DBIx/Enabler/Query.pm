@@ -184,6 +184,10 @@ This method is aliased as C<results()>.
 
 sub resultset {
 	my ($self) = shift;
+	# Process the template in case it changes anything (like query.key_columns)
+	# so that everything will get passed to the ResultSet.
+	$self->sql();
+	# TODO: cache this?
 	DBIx::Enabler::ResultSet->new($self, @_);
 }
 {

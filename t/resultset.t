@@ -235,4 +235,8 @@ my @key = qw(bl argh);
 $query->{key_columns} = [@key];
 is_deeply($query->result->{key_columns}, [@key], 'key_columns transferred from Q to R');
 
+# test transfer of attributes set in the template
+$query = $qmod->new(sql => qq|[% query.key_columns = ['boo'] %]|);
+is_deeply($query->result->{key_columns}, ['boo'], 'key_columns set in template transferred from Q to R');
+
 done_testing;
