@@ -72,8 +72,8 @@ sub new {
 			$self->{$var} = $opts{$var};
 		}
 		# or look for them on the query object
-		elsif( exists($self->{query}{$var}) ){
-			$self->{$var} = $self->{query}{$var};
+		elsif( exists($query->{$var}) ){
+			$self->{$var} = $query->{$var};
 		}
 	}
 
