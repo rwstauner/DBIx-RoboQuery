@@ -233,6 +233,8 @@ sub execute {
 			){
 				$transformations->group(@$groups);
 			}
+			# set all the columns so we can use group exclusions
+			$transformations->fields(@$columns);
 		}
 	}
 
