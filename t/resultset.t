@@ -230,4 +230,9 @@ $mock_sth->set_series('fetchrow_hashref', @trdata);
 $r = $rmod->new($query, $opts);
 is_deeply($r->hash,  $trdatatree, 'hash returns transformed data');
 
+# test transfer of attributes
+my @key = qw(bl argh);
+$query->{key_columns} = [@key];
+is_deeply($query->result->{key_columns}, [@key], 'key_columns transferred from Q to R');
+
 done_testing;
