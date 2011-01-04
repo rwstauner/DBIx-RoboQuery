@@ -10,6 +10,7 @@ print $tmp qq|hello [% IF 0 %]true[% ELSE %]false[% END %]|;
 close $tmp;
 
 my $cond_while = qq|1 [% FOREACH account IN account_numbers %] [% IF loop.first %] WHERE [% ELSE %] OR [% END %] account_number LIKE '%[% account.remove('(\\W+)') %]%' [% END %]|;
+my $transformations = {trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s }};
 
 # This is mostly testing Template Toolkit which probably isn't useful
 my @templates = (
@@ -42,7 +43,7 @@ my @templates = (
 		qq|hello IS NULL t|,
 	],
 	[
-		{sql => qq|[% CALL query.transform('trim', 'fields', ['address']); GET query.transformations.queue.first.first %]|},
+		{sql => qq|[% CALL query.transform('trim', 'fields', ['address']); GET query.transformations.queue.first.first %]|, transformations => $transformations},
 		qq|trim|,
 	],
 	[
@@ -107,7 +108,7 @@ foreach my $template ( @templates ){
 	is($q->sql, '12hi', 'sql');
 	is_deeply($i, 12, 'only process once');
 
-	$q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|);
+	$q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|, transformations => $transformations);
 	is($q->sql, 'hi', 'sql');
 	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
 	is($q->sql, 'hi', 'sql');

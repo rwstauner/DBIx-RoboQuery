@@ -7,8 +7,14 @@ use THelper;
 
 my $qmod = 'DBIx::Enabler::Query';
 
+my $transformations = {
+	trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s; },
+	squeeze => sub { (my $s = $_[0]) =~ s/\s+/ /g; $s; },
+	uc => sub { uc $_[0] }
+};
+
 require_ok($qmod);
-my $query = $qmod->new(sql => "SELECT * FROM table1");
+my $query = $qmod->new(sql => "SELECT * FROM table1", transformations => $transformations);
 isa_ok($query, $qmod);
 
 my $rmod = 'DBIx::Enabler::ResultSet';
