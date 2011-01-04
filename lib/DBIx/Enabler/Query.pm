@@ -47,6 +47,7 @@ A string to be prepended to the SQL before parsing the template
 A string to be appended  to the SQL before parsing the template
 * I<transformations>
 An instance of L<Sub::Chain::Group>
+(or a hashref (see L</prepare_transformations>))
 * I<variables>
 A hashref of variables made available to the template
 
@@ -85,6 +86,8 @@ sub new {
 		croak(q|Must specify one of 'sql' or 'file'|);
 	}
 
+	$self->prepare_transformations();
+
 	$self->{tt} = Template->new(
 		ABSOLUTE => 1,
 		STRICT => 1,
@@ -118,6 +121,45 @@ sub _pass_through_args {
 	);
 }
 
+=method prepare_transformations
+
+This method (called from the constructor)
+prepares the C<transformations> attribute
+(if one was passed to the constructor).
+
+This method provides a shortcut for convenience:
+If C<transformations> is a simple hash,
+it is assumed to be a hash of named subs and is passed to
+L<< Sub::Chain::Group->new() | Sub::Chain::Group/new >>
+as the C<subs> key of the C<chain_args> hashref.
+See L<Sub::Chain::Group> and L<Sub::Chain::Named>
+for more information about these.
+
+If you pass your own instance of L<Sub::Chain::Group>
+this method will do nothing.
+It is mostly here to help a subclass use a different module
+for transformations if desired.
+
+=cut
+
+sub prepare_transformations {
+	my ($self) = @_;
+
+	return
+		unless my $tr = $self->{transformations};
+
+	# assume a simple hash is a hash of named subs
+	if( ref $tr eq 'HASH' ){
+		require Sub::Chain::Group;
+		$self->{transformations} =
+			Sub::Chain::Group->new(
+				chain_class => 'Sub::Chain::Named',
+				chain_args  => {subs => $tr},
+			);
+	}
+	# return nothing
+	return;
+}
 
 =method pre_process_sql
 
@@ -227,11 +269,12 @@ sub sql {
 
 =method transform
 
-	$query->transform($name, $type, [qw(fields)], @arguments);
+	$query->transform($sub, $type, [qw(fields)], @arguments);
 
 Add a transformation to be applied to the result data.
 
-See L<Sub::Chain/append>.
+The default implementation simply passes the arguments
+to L<Sub::Chain::Group/append>.
 
 =cut
 
