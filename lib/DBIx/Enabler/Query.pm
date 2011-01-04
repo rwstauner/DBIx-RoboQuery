@@ -17,7 +17,6 @@ use strict;
 use warnings;
 
 use Carp qw(carp croak);
-use Data::Transform::Named::Stackable ();
 use DBIx::Enabler ();
 use DBIx::Enabler::ResultSet ();
 use Template 2.22; # Template Toolkit
@@ -46,6 +45,8 @@ L<DBIx::Enabler::ResultSet/array>() method.
 A string to be prepended to the SQL before parsing the template
 * I<suffix>
 A string to be appended  to the SQL before parsing the template
+* I<transformations>
+An instance of L<Sub::Chain::Group>
 * I<variables>
 A hashref of variables made available to the template
 
@@ -230,14 +231,17 @@ sub sql {
 
 Add a transformation to be applied to the result data.
 
-See L<Data::Transform::Named::Stackable/push>.
+See L<Sub::Chain/append>.
 
 =cut
 
 sub transform {
 	my ($self, @tr) = @_;
-	( $self->{transformations} ||=
-		Data::Transform::Named::Stackable->new() )->push(@tr);
+
+	croak("Cannot transform without 'transformations'")
+		unless my $tr = $self->{transformations};
+
+	$tr->append(@tr);
 }
 
 1;

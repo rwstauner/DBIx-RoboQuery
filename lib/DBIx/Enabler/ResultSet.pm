@@ -164,7 +164,7 @@ sub array {
 	my $rows = $self->{sth}->fetchall_arrayref(@args);
 	# if @tr_args is empty, the hash will be the only argument sent
 	return $self->{transformations}
-		? [map { $self->{transformations}->transform(@tr_args, $_) } @$rows]
+		? [map { $self->{transformations}->call(@tr_args, $_) } @$rows]
 		: $rows;
 }
 
@@ -297,7 +297,7 @@ sub hash {
 	my $tr = $self->{transformations};
 	my $fetchrow = $tr
 		# don't attempt to transform if the fetch returned undef
-		? sub { my $r = $sth->fetchrow_hashref(); $r && $tr->transform($r); }
+		? sub { my $r = $sth->fetchrow_hashref(); $r && $tr->call($r); }
 		: sub {         $sth->fetchrow_hashref(); };
 
 	# check for preferences once... if there are none, do the quick version
