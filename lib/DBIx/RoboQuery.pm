@@ -3,9 +3,40 @@ package DBIx::RoboQuery;
 
 =head1 SYNOPSIS
 
-	DBIx::RoboQuery->new(sql => "SELECT * FROM table");
-	DBIx::RoboQuery->new(file => "/path/to/query.sql", variables => {});
-	DBIx::RoboQuery->new({sql => \"SELECT * FROM table", variables => {}});
+	my $template_string = <<SQL;
+	[%
+		query.key_columns = ['user_id']
+		query.transform('format_date', {fields => 'birthday'});
+	%]
+		SELECT user_id,
+			name,
+			dob as birthday,
+		FROM users
+		WHERE dob < '[% minimum_birthdate() %]'
+	SQL
+
+	# create query object from template
+	my $query = DBIx::RoboQuery->new(
+		sql => $template_string,       # (or use file => $filepath)
+		dbh => $dbh,                   # returned from DBI->connect()
+		transformations => {           # functions available for transformation
+			format_date => \&aribtrary_date_format
+		}
+		variables => {                 # variables for use in template
+			minimum_birthdate => \&arbitrary_date_function
+		}
+	);
+
+	# transformations (and other configuration) can be specified in the sql
+	# template or in your code if you know you'll always want certain ones
+	$query->transform('trim', group => 'non_key_columns');
+
+	my $resultset = $query->resultset;
+
+	# get records (with transformations applied)
+	my $records = $resultset->hash; # like DBI/fetchall_hashref
+	# or
+	my $records = $resultset->array; # like DBI/fetchall_arrayref
 
 =cut
 
