@@ -51,6 +51,7 @@ my @order = (
 		[qw(fld1 fld2)],
 		{suffix => qr/LIMIT\s+   \d+/x}
 	],
+	# TODO: "SELECT * FROM table WHERE order_clause = 'ORDER BY something' ORDER BY order_clause"
 );
 
 plan tests => scalar @order;
