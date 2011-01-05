@@ -1,9 +1,8 @@
 use strict;
 use warnings;
 use Test::More;
-use DBIx::Enabler::Util qw(
-	order_from_sql
-);
+use DBIx::RoboQuery::Util ();
+*order_from_sql = \&DBIx::RoboQuery::Util::order_from_sql;
 
 my @order = (
 	[

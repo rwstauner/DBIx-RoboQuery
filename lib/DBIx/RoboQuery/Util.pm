@@ -3,22 +3,15 @@ package DBIx::RoboQuery::Util;
 
 =head1 SYNOPSIS
 
-	use DBIx::Enabler::Util qw(functions);
+	use DBIx::RoboQuery::Util ();
 
 A collection of utility functions for L<DBIx::RoboQuery>.
-
-Exports nothing by default.
 
 =cut
 
 use strict;
 use warnings;
 
-use Exporter;
-our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(
-	order_from_sql
-);
 
 =func order_from_sql
 
@@ -76,3 +69,11 @@ sub order_from_sql {
 }
 
 1;
+
+=head1 EXPORTS
+
+None.
+The functions in this module are not intended for public
+consumption.
+If you choose to ignore this and you really want to
+export a subroutine, see L<Sub::Exporter>.
