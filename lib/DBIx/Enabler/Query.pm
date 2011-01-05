@@ -62,6 +62,8 @@ sub new {
 
 	# defaults
 	my $self = {
+		#resultset_class => "${class}::ResultSet",
+		resultset_class => 'DBIx::Enabler::ResultSet',
 		variables => {},
 	};
 
@@ -115,6 +117,7 @@ sub _pass_through_args {
 		dbh
 		default_slice
 		prefix
+		resultset_class
 		suffix
 		transformations
 		variables
@@ -231,7 +234,7 @@ sub resultset {
 	# so that everything will get passed to the ResultSet.
 	$self->sql();
 	# TODO: cache this?
-	DBIx::Enabler::ResultSet->new($self, @_);
+	$self->{resultset_class}->new($self, @_);
 }
 {
 	no warnings 'once';
