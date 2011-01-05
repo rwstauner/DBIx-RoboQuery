@@ -222,7 +222,9 @@ The rules are tested in the order they are set,
 and the records are processed in reverse order
 (to be compatible with the "last one in wins" logic of L<DBI/fetchall_hashref>).
 
-See L<DBIx::RoboQuery::ResultSet/hash> and L<DBIx::RoboQuery::ResultSet/preference>
+See
+L<DBIx::RoboQuery::ResultSet/hash> and
+L<DBIx::RoboQuery::ResultSet/preference>
 for more information.
 
 =cut
