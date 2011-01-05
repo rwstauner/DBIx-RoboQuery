@@ -55,6 +55,12 @@ to the end of the string,
 specify a string or regexp that follows the ORDER BY clause
 and completes the statement.
 
+Other modules that could be used instead:
+
+=for :list
+* L<SQL::Statement>
+* L<SQL::OrderBy>
+
 =cut
 
 sub order_from_sql {
