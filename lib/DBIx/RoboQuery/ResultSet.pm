@@ -14,7 +14,6 @@ and enables more powerful configuration of results.
 use strict;
 use warnings;
 use Carp qw(croak carp);
-use DBIx::Enabler::Util qw(order_from_sql);
 
 =method new
 
@@ -49,9 +48,6 @@ An arrayref of column names to be dropped (ignored) from the result set
 * I<key_columns>
 An arrayref of column names that define 'unique' records;
 This is used by the L</hash> method.  See also L<DBI/fetchall_hashref>.
-* I<order>
-An arrayref of column names to specify the sort order of the query;
-If not provided this will be guessed from the SQL statement.
 
 =cut
 
@@ -78,7 +74,7 @@ sub new {
 	}
 
 	# the columns attributes should be arrayrefs
-	foreach my $cols ( qw(key_columns drop_columns order) ){
+	foreach my $cols ( qw(key_columns drop_columns) ){
 		if( $self->{$cols} ){
 			$self->{$cols} = [$self->{$cols}]
 				unless ref($self->{$cols}) eq 'ARRAY';
@@ -359,19 +355,6 @@ sub non_key_columns {
 	return @{$self->{non_key_columns}};
 }
 
-=method order
-
-Return a list of the column names of the sort order of the query.
-
-=cut
-
-sub order {
-	my ($self) = @_;
-	$self->{order} = [order_from_sql($self->{query}->sql, $self->{query})]
-		if !@{$self->{order}};
-	return @{$self->{order}};
-}
-
 =method _pass_through_args
 
 A list of allowed arguments to the constructor that
@@ -389,7 +372,6 @@ sub _pass_through_args {
 		hash_key_name
 		key_columns
 		preferences
-		order
 		transformations
 	);
 }

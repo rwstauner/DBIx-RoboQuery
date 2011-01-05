@@ -36,7 +36,7 @@ my $opts = {
 my $r = $rmod->new($query, $opts);
 isa_ok($r, $rmod);
 
-foreach my $colattr ( qw(key_columns drop_columns order) ){
+foreach my $colattr ( qw(key_columns drop_columns) ){
 	isa_ok($r->{$colattr}, 'ARRAY', "$colattr column attribute array ref");
 	is_deeply($r->{$colattr}, [$opts->{$colattr} || ()], "$colattr column attribute value");
 	is_deeply([$r->$colattr], [$opts->{$colattr} || ()], "$colattr method is a list");

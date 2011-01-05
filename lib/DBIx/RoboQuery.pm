@@ -14,6 +14,7 @@ use warnings;
 
 use Carp qw(carp croak);
 use DBIx::RoboQuery::ResultSet ();
+use DBIx::RoboQuery::Util ();
 use Template 2.22; # Template Toolkit
 
 =method new
@@ -36,6 +37,9 @@ A database handle (the return of C<< DBI->connect() >>)
 * I<default_slice>
 The default slice of the record returned from the
 L<DBIx::RoboQuery::ResultSet/array>() method.
+* I<order>
+An arrayref of column names to specify the sort order of the query;
+If not provided this will be guessed from the SQL statement.
 * I<prefix>
 A string to be prepended to the SQL before parsing the template
 * I<suffix>
@@ -97,6 +101,22 @@ sub new {
 		or die "Query error: Template::Toolkit failed: $Template::ERROR\n";
 
 	return $self;
+}
+
+=method order
+
+Return a list of the column names of the sort order of the query.
+
+=cut
+
+sub order {
+	my ($self) = @_;
+	$self->{order} = [
+		DBIx::RoboQuery::Util::order_from_sql(
+			$self->{query}->sql, $self->{query})
+	]
+		if !@{$self->{order}};
+	return @{$self->{order}};
 }
 
 =method _pass_through_args
