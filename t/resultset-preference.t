@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Template;
-use DBIx::Enabler::Query;
+use DBIx::RoboQuery;
 
 my $pod_example =
 [
@@ -91,7 +91,7 @@ my @tests = (
 
 plan tests => scalar @tests * 3;
 
-my $r = DBIx::Enabler::Query->new(sql => '')->resultset;
+my $r = DBIx::RoboQuery->new(sql => '')->resultset;
 foreach my $test ( @tests ){
 	my $p = shift @$test;
 	my $prefs = shift @$test;
@@ -101,7 +101,7 @@ foreach my $test ( @tests ){
 	is_deeply($r->preference(@$test), $$test[$p-1], "expected record $p");
 
 	# api test
-	my $q = DBIx::Enabler::Query->new(sql => '');
+	my $q = DBIx::RoboQuery->new(sql => '');
 	$q->prefer(@$prefs);
 	my $r2 = $q->resultset;
 	is_deeply($r2->{preferences}, $prefs, 'preferences ready');

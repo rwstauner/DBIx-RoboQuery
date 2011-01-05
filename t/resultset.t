@@ -5,7 +5,7 @@ use Test::MockObject;
 use lib 't/lib';
 use THelper;
 
-my $qmod = 'DBIx::Enabler::Query';
+my $qmod = 'DBIx::RoboQuery';
 
 my $transformations = {
 	trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s; },
@@ -17,7 +17,7 @@ require_ok($qmod);
 my $query = $qmod->new(sql => "SELECT * FROM table1", transformations => $transformations);
 isa_ok($query, $qmod);
 
-my $rmod = 'DBIx::Enabler::ResultSet';
+my $rmod = 'DBIx::RoboQuery::ResultSet';
 require_ok($rmod);
 
 my @non_keys = qw(goo ber bar baz beft blou lou);

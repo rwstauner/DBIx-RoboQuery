@@ -1,11 +1,11 @@
-package DBIx::Enabler::ResultSet;
+package DBIx::RoboQuery::ResultSet;
 # ABSTRACT: Configure the results to get what you want
 
 =head1 SYNOPSIS
 
-	DBIx::Enabler::ResultSet->new($enabler_query, {opt => 'val'})
+	DBIx::RoboQuery::ResultSet->new($query, {opt => 'val'})
 
-The companion to a DBIx::Enabler::Query.
+This is the companion to a DBIx::RoboQuery.
 Provides easy access to information about the query
 and enables more powerful configuration of results.
 
@@ -18,26 +18,26 @@ use DBIx::Enabler::Util qw(order_from_sql);
 
 =method new
 
-	DBIx::Enabler::ResultSet->new($query, opt => 'val');
+	DBIx::RoboQuery::ResultSet->new($query, opt => 'val');
 
 	# Can also be instantiated from a Query object:
-	DBIx::Enabler::Query->new(sql => $sql)->resultset(opt => 'val');
+	DBIx::RoboQuery->new(sql => $sql)->resultset(opt => 'val');
 
-The first argument should be a DBIx::Enabler::Query instance.
+The first argument should be a DBIx::RoboQuery instance.
 
 The second argument is a hash or hashref of options.
 These options will be checked in the passed hash[ref] first.
 If they do not exist, they will be looked for on the Query object.
 
 	my $dbh = DBI->connect();
-	$query = DBIx::Enabler::Query->new(sql => $sql, dbh => $dbh);
+	$query = DBIx::RoboQuery->new(sql => $sql, dbh => $dbh);
 
 	# These two invocations will produce the same result:
 	# The 1st call sets 'dbh' explicitly.
 	# The 2nd call will find the 'dbh' attribute on $query.
 
-	DBIx::Enabler::ResultSet->new($query, dbh => $dbh);
-	DBIx::Enabler::ResultSet->new($query);
+	DBIx::RoboQuery::ResultSet->new($query, dbh => $dbh);
+	DBIx::RoboQuery::ResultSet->new($query);
 
 =for :list
 * I<dbh>
@@ -253,7 +253,7 @@ the last record from the database will be returned.
 The I<preferences> attribute can be used to determine which record
 to select instead of simply the last one received.
 See L<the preference() method|/preference> for more information,
-or L<DBIx::Enabler::Query/prefer>
+or L<DBIx::RoboQuery/prefer>
 for how to write and store the preference rules.
 
 An error is thrown if I<key_columns> is empty.

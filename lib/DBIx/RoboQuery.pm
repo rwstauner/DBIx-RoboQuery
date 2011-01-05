@@ -1,15 +1,11 @@
-package DBIx::Enabler::Query;
-# ABSTRACT: More informative and powerful queries
+package DBIx::RoboQuery;
+# ABSTRACT: Very configurable/programmable query object
 
 =head1 SYNOPSIS
 
-	DBIx::Enabler::Query->new(sql => "SELECT * FROM table");
-	DBIx::Enabler::Query->new(file => "/path/to/query.sql", variables => {});
-	DBIx::Enabler::Query->new({sql => \"SELECT * FROM table", variables => {}});
-
-An object to encapsulate a database query
-and various methods to provide you with more information
-and configuration of your queries.
+	DBIx::RoboQuery->new(sql => "SELECT * FROM table");
+	DBIx::RoboQuery->new(file => "/path/to/query.sql", variables => {});
+	DBIx::RoboQuery->new({sql => \"SELECT * FROM table", variables => {}});
 
 =cut
 
@@ -17,8 +13,7 @@ use strict;
 use warnings;
 
 use Carp qw(carp croak);
-use DBIx::Enabler ();
-use DBIx::Enabler::ResultSet ();
+use DBIx::RoboQuery::ResultSet ();
 use Template 2.22; # Template Toolkit
 
 =method new
@@ -40,7 +35,7 @@ The file path of a SQL query [template] (mutually exclusive with I<sql>)
 A database handle (the return of C<< DBI->connect() >>)
 * I<default_slice>
 The default slice of the record returned from the
-L<DBIx::Enabler::ResultSet/array>() method.
+L<DBIx::RoboQuery::ResultSet/array>() method.
 * I<prefix>
 A string to be prepended to the SQL before parsing the template
 * I<suffix>
@@ -62,8 +57,7 @@ sub new {
 
 	# defaults
 	my $self = {
-		#resultset_class => "${class}::ResultSet",
-		resultset_class => 'DBIx::Enabler::ResultSet',
+		resultset_class => "${class}::ResultSet",
 		variables => {},
 	};
 
@@ -82,7 +76,9 @@ sub new {
 	}
 	# the file path should at least be a true value
 	elsif( my $f = $opts{file} ){
-		$self->{template} = DBIx::Enabler::slurp_file($f);
+		open(my $fh, '<', $f)
+			or croak("Failed to open '$f': $!");
+		$self->{template} = do { local $/; <$fh>; };
 	}
 	else {
 		croak(q|Must specify one of 'sql' or 'file'|);
@@ -206,7 +202,7 @@ The rules are tested in the order they are set,
 and the records are processed in reverse order
 (to be compatible with the "last one in wins" logic of L<DBI/fetchall_hashref>).
 
-See L<DBIx::Enabler::ResultSet/hash> and L<DBIx::Enabler::ResultSet/preference>
+See L<DBIx::RoboQuery::ResultSet/hash> and L<DBIx::RoboQuery::ResultSet/preference>
 for more information.
 
 =cut
@@ -219,10 +215,10 @@ sub prefer {
 =method resultset
 
 This is a convenience method which returns a
-L<DBIx::Enabler::ResultSet> object based upon this query.
+L<DBIx::RoboQuery::ResultSet> object based upon this query.
 
 Any arguments passed will be passed to the
-L<ResultSet constructor|DBIx::Enabler::ResultSet/new>.
+L<ResultSet constructor|DBIx::RoboQuery::ResultSet/new>.
 
 This method is aliased as C<results()>.
 
@@ -293,3 +289,26 @@ sub transform {
 1;
 
 =for Pod::Coverage result results
+
+=head1 DESCRIPTION
+
+This robotic query object can be configured to help you
+get exactly the result set that you want.
+
+It was designed to run in a completely automated (unmanned) environment and
+read in a template that both builds the desired SQL query dynamically
+and configures the query output.
+It should be usable anywhere you desire
+a highly configurable query and result set.
+
+It (and its companion L<ResultSet|DBIx::RoboQuery::ResultSet>)
+provide various methods for configuring/declaring
+what to expect and what to return.
+It aims to be as informative as you might need it to be.
+
+=head2 SECURITY
+
+B<NOTE>: This module is B<not> designed to take in external user input
+since the SQL queries are passed through a templating engine.
+This module is intended for use in internal environments
+where you are the source of the query templates.

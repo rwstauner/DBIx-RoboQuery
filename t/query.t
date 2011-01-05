@@ -66,7 +66,7 @@ my @templates = (
 # (require + isa Q) + throws + templates + (key_columns) + (process once) + (isa R) + preferences
 plan tests => 2 + 2 + @templates + 4 + 12 + 1 + 4;
 
-my $mod = 'DBIx::Enabler::Query';
+my $mod = 'DBIx::RoboQuery';
 require_ok($mod);
 isa_ok($mod->new(sql => 'SQL'), $mod);
 
@@ -115,7 +115,7 @@ foreach my $template ( @templates ){
 	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
 }
 
-isa_ok($mod->new(sql => "hi.")->results, 'DBIx::Enabler::ResultSet');
+isa_ok($mod->new(sql => "hi.")->results, 'DBIx::RoboQuery::ResultSet');
 
 my $query = $mod->new(sql => ':-P');
 is_deeply($query->{preferences}, undef, 'no preferences');

@@ -1,10 +1,13 @@
-=head1 DBIx::Enabler
+=head1 DBIx::RoboQuery
 
-The modules in this namespace are meant to enable
-the user to do more than basic DBI programming.
+This robotic query object can be configured to help you
+get exactly the result set that you want.
 
-This means getting more information
-and doing more powerful things.
+It was designed to run in a completely automated (unmanned) environment and
+read in a template that both builds the desired SQL query dynamically
+and configures the query output.
+It should be usable anywhere you desire
+a highly configurable query and result set.
 
 See POD for more information.
 
