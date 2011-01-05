@@ -404,3 +404,4 @@ where you are the source of the query templates.
 
 =for :list
 * Allow for other templating engines (or none at all)
+* Write a lot more tests
