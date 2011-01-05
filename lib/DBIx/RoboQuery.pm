@@ -365,6 +365,25 @@ provide various methods for configuring/declaring
 what to expect and what to return.
 It aims to be as informative as you might need it to be.
 
+The following enhancements are possible:
+
+=begin :list
+
+=item *
+
+The query can be built with templates
+(currently L<Template::Toolkit|Template>)
+which allows for perl variables and functions
+to interpolate and/or generate the SQL
+
+=item *
+
+The output can be transformed (using L<Sub::Chain::Group>)
+
+* TODO: list more
+
+=end :list
+
 See note about L</SECURITY>.
 
 =head1 SECURITY
