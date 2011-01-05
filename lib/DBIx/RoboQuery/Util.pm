@@ -12,6 +12,21 @@ A collection of utility functions for L<DBIx::RoboQuery>.
 use strict;
 use warnings;
 
+# convenience function used in both modules
+# to convert specific hash items to arrayrefs
+
+sub _ensure_arrayrefs {
+	my ($hash, @keys) = @_;
+	foreach my $key ( @keys ){
+		if( $hash->{$key} ){
+			$hash->{$key} = [$hash->{$key}]
+				unless ref($hash->{$key}) eq 'ARRAY';
+		}
+		else{
+			$hash->{$key} = [];
+		}
+	}
+}
 
 =func order_from_sql
 

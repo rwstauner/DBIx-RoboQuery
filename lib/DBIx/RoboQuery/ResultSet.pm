@@ -74,15 +74,9 @@ sub new {
 	}
 
 	# the columns attributes should be arrayrefs
-	foreach my $cols ( qw(key_columns drop_columns) ){
-		if( $self->{$cols} ){
-			$self->{$cols} = [$self->{$cols}]
-				unless ref($self->{$cols}) eq 'ARRAY';
-		}
-		else{
-			$self->{$cols} = [];
-		}
-	}
+	DBIx::RoboQuery::Util::_ensure_arrayrefs($self,
+		qw(key_columns drop_columns)
+	);
 
 	$self->{hash_key_name} ||=
 		($self->{dbh} && $self->{dbh}{FetchHashKeyName})

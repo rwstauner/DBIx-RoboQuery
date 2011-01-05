@@ -71,6 +71,10 @@ sub new {
 		$self->{$var} = $opts{$var} if exists($opts{$var});
 	}
 
+	DBIx::RoboQuery::Util::_ensure_arrayrefs($self,
+		qw(order)
+	);
+
 	croak(q|Cannot include both 'sql' and 'file'|)
 		if exists($opts{sql}) && exists($opts{file});
 
