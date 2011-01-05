@@ -18,7 +18,7 @@ package DBIx::RoboQuery;
 	# create query object from template
 	my $query = DBIx::RoboQuery->new(
 		sql => $template_string,       # (or use file => $filepath)
-		dbh => $dbh,                   # returned from DBI->connect()
+		dbh => $dbh,                   # handle returned from DBI->connect()
 		transformations => {           # functions available for transformation
 			format_date => \&aribtrary_date_format
 		}
@@ -59,26 +59,28 @@ First argument is the sql template to process.
 The second argument is a hash or hashref of options:
 
 =for :list
-* I<sql>
-The SQL query [template] in a string (or a reference to a string)
-* I<file>
-The file path of a SQL query [template] (mutually exclusive with I<sql>)
-* I<dbh>
+* C<sql>
+The SQL query [template] in a string;
+This can be a reference to a string in case your template [query]
+is large and it makes you feel better to pass it by reference.
+* C<file>
+The file path of a SQL query [template] (mutually exclusive with C<sql>)
+* C<dbh>
 A database handle (the return of C<< DBI->connect() >>)
-* I<default_slice>
-The default slice of the record returned from the
-L<DBIx::RoboQuery::ResultSet/array>() method.
-* I<order>
+* C<default_slice>
+The default slice of the record returned from
+L<DBIx::RoboQuery::ResultSet/array>.
+* C<order>
 An arrayref of column names to specify the sort order of the query;
 If not provided this will be guessed from the SQL statement.
-* I<prefix>
+* C<prefix>
 A string to be prepended to the SQL before parsing the template
-* I<suffix>
+* C<suffix>
 A string to be appended  to the SQL before parsing the template
-* I<transformations>
+* C<transformations>
 An instance of L<Sub::Chain::Group>
 (or a hashref (see L</prepare_transformations>))
-* I<variables>
+* C<variables>
 A hashref of variables made available to the template
 
 =cut
