@@ -1,11 +1,11 @@
-package DBIx::Enabler::Util;
-# ABSTRACT: Utility functions for DBI related tasks
+package DBIx::RoboQuery::Util;
+# ABSTRACT: Utility functions for DBIx::RoboQuery
 
 =head1 SYNOPSIS
 
 	use DBIx::Enabler::Util qw(functions);
 
-A collection of utility functions for working with SQL and DBI.
+A collection of utility functions for L<DBIx::RoboQuery>.
 
 Exports nothing by default.
 
