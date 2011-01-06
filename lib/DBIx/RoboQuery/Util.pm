@@ -28,6 +28,12 @@ sub _ensure_arrayrefs {
 	}
 }
 
+# flatten any arrayrefs and return a single list
+
+sub _flatten {
+	return map { ref $_ ? @$_ : $_ } @_;
+}
+
 =func order_from_sql
 
 	# returns qw(fld1)
