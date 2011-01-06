@@ -115,7 +115,7 @@ foreach my $template ( @templates ){
 	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
 }
 
-isa_ok($mod->new(sql => "hi.")->results, 'DBIx::RoboQuery::ResultSet');
+isa_ok($mod->new(sql => "hi.")->resultset, 'DBIx::RoboQuery::ResultSet');
 
 my $query = $mod->new(sql => ':-P');
 is_deeply($query->{preferences}, undef, 'no preferences');

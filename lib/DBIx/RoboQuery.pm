@@ -373,10 +373,6 @@ sub resultset {
 	# TODO: cache this?
 	$self->{resultset_class}->new($self, @_);
 }
-{
-	no warnings 'once';
-	*result = *results = *resultset;
-}
 
 =method sql
 
