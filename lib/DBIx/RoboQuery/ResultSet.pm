@@ -31,11 +31,11 @@ use Carp qw(croak carp);
 	# Can also be instantiated from a Query object:
 	DBIx::RoboQuery->new(sql => $sql)->resultset(opt => 'val');
 
-The first argument should be a DBIx::RoboQuery instance.
+The first argument should be a L<DBIx::RoboQuery> instance.
 
-The second argument is a hash or hashref of options.
+The remaining arguments should be a hash or hashref of options.
 These options will be checked in the passed hash[ref] first.
-If they do not exist, they will be looked for on the Query object.
+If they do not exist, they will be looked for on the query object.
 
 	my $dbh = DBI->connect();
 	$query = DBIx::RoboQuery->new(sql => $sql, dbh => $dbh);
@@ -47,16 +47,7 @@ If they do not exist, they will be looked for on the Query object.
 	DBIx::RoboQuery::ResultSet->new($query, dbh => $dbh);
 	DBIx::RoboQuery::ResultSet->new($query);
 
-=for :list
-* I<dbh>
-A database handle (the return of C<< DBI->connect() >>)
-* I<default_slice>
-The default slice of the record returned from the L</array> method.
-* I<drop_columns>
-An arrayref of column names to be dropped (ignored) from the result set
-* I<key_columns>
-An arrayref of column names that define 'unique' records;
-This is used by the L</hash> method.  See also L<DBI/fetchall_hashref>.
+See L<DBIx::RoboQuery/new> for the list of options.
 
 =cut
 
