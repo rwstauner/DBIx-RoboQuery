@@ -18,12 +18,9 @@ use warnings;
 sub _ensure_arrayrefs {
 	my ($hash, @keys) = @_;
 	foreach my $key ( @keys ){
-		if( $hash->{$key} ){
+		if( exists $hash->{$key} ){
 			$hash->{$key} = [$hash->{$key}]
 				unless ref($hash->{$key}) eq 'ARRAY';
-		}
-		else{
-			$hash->{$key} = [];
 		}
 	}
 }
