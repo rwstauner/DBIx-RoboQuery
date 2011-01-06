@@ -5,7 +5,7 @@ package DBIx::RoboQuery;
 
 	my $template_string = <<SQL;
 	[%
-		query.key_columns = ['user_id']
+		query.key_columns('user_id')
 		query.transform('format_date', {fields => 'birthday'});
 	%]
 		SELECT user_id,
@@ -65,9 +65,10 @@ A database handle (the return of C<< DBI->connect() >>)
 The default slice of the records returned;
 Passed to ResultSet object if present.
 See L<DBIx::RoboQuery::ResultSet/array>.
+* C<key_columns>
+An arrayref of [primary key] column names;  See L</key_columns>.
 * C<order>
-An arrayref of column names to specify the sort order of the query;
-If not provided this will be guessed from the SQL statement.
+An arrayref of column names to specify the sort order;  See L</order>.
 * C<prefix>
 A string to be prepended to the SQL before parsing the template
 * C<suffix>
@@ -89,6 +90,7 @@ sub new {
 
 	# defaults
 	my $self = {
+		key_columns => [],
 		resultset_class => "${class}::ResultSet",
 		variables => {},
 	};
@@ -100,7 +102,7 @@ sub new {
 	}
 
 	DBIx::RoboQuery::Util::_ensure_arrayrefs($self,
-		qw(order)
+		qw(key_columns order)
 	);
 
 	croak(q|Cannot include both 'sql' and 'file'|)
@@ -135,19 +137,66 @@ sub new {
 	return $self;
 }
 
+=method key_columns
+
+	# get
+	my @key_columns = $query->key_columns;
+	# set
+	$query->key_columns('id', 'fk_id');
+	# empty
+	$query->key_columns([]);
+
+Accessor for the list of [primary] key columns for the query;
+
+Any arrayrefs provided (when setting the list) will be flattened.
+This allows you to empty the list by sending an empty arrayref
+(if you have a reason to do so).
+
+The key_columns attribute is sent to L<DBI/fetchall_hashref>
+when calling L<DBIx::RoboQuery::ResultSet/hash>.
+
+It may be most useful to set this value from within the template
+(see L</SYNOPSIS>).
+
+=cut
+
+sub key_columns {
+	my ($self) = shift;
+	$self->{key_columns} = [DBIx::RoboQuery::Util::_flatten(@_)]
+		if @_;
+	return @{$self->{key_columns}};
+}
+
 =method order
 
-Return a list of the column names of the sort order of the query.
+Accessor for the list of the column names of the sort order of the query;
+
+This is a getter/setter which works like L</key_columns>
+with one exception:
+If the value has never been set
+it is initialized to the list of columns from the C<ORDER BY> clause
+of the sql statement as returned from
+L<DBIx::RoboQuery::Util/order_from_sql>.
+If there is no C<ORDER BY> clause or the statement cannot be parsed
+an empty list will be returned.
+
+It may be most useful to set this value from within the template
+(see L</SYNOPSIS>), especially if your C<ORDER BY> clause is complex.
 
 =cut
 
 sub order {
-	my ($self) = @_;
-	$self->{order} = [
-		DBIx::RoboQuery::Util::order_from_sql(
-			$self->{query}->sql, $self->{query})
-	]
-		if !@{$self->{order}};
+	my ($self) = shift;
+	if( @_ ){
+		$self->{order} = [DBIx::RoboQuery::Util::_flatten(@_)]
+	}
+	# only if not previously set (empty arrayref counts as being set)
+	elsif( !$self->{order} ){
+		$self->{order} = [
+			DBIx::RoboQuery::Util::order_from_sql(
+				$self->sql, $self)
+		]
+	}
 	return @{$self->{order}};
 }
 
@@ -164,6 +213,8 @@ sub _pass_through_args {
 	qw(
 		dbh
 		default_slice
+		key_columns
+		order
 		prefix
 		resultset_class
 		suffix
@@ -401,5 +452,4 @@ where you are the source of the query templates.
 =for :list
 * Allow for other templating engines (or none at all)
 * Make decisions about how L</order> should with (with regards to ASC/DESC)
-* Setter functions
 * Write a lot more tests
