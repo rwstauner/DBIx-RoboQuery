@@ -412,6 +412,16 @@ sub preference {
 	return $records[-1];
 }
 
+=method query
+
+Returns the query object.
+
+=cut
+
+sub query {
+	return $_[0]->{query};
+}
+
 # The DBI objects clean up after themselves, so DESTROY not currently warranted
 
 1;
