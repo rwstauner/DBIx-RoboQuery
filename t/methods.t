@@ -37,6 +37,16 @@ is_deeply([$query->key_columns], [qw(hello there you)], 'key columns set with mi
 $query->key_columns('hello', ['there'], 'you');
 is_deeply([$query->key_columns], [qw(hello there you)], 'key columns set with mixture');
 
+# drop_columns
+$query = $qmod->new(sql => $sql);
+is_deeply([$query->drop_columns], [], 'drop columns not provided to constructor');
+
+$query = $qmod->new(sql => $sql, drop_columns => 'arr');
+is_deeply([$query->drop_columns], ['arr'], 'drop columns passed to constructor');
+
+$query->drop_columns('hello', ['there'], 'you');
+is_deeply([$query->drop_columns], [qw(hello there you)], 'drop columns set with mixture');
+
 # order
 $query = $qmod->new(sql => $sql);
 ok(!exists $query->{order}, 'order does not exist yet');

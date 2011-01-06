@@ -90,6 +90,7 @@ sub new {
 
 	# defaults
 	my $self = {
+		drop_columns => [],
 		key_columns => [],
 		resultset_class => "${class}::ResultSet",
 		variables => {},
@@ -135,6 +136,31 @@ sub new {
 		or die "Query error: Template::Toolkit failed: $Template::ERROR\n";
 
 	return $self;
+}
+
+=method drop_columns
+
+Accessor for the list of columns to drop (remove) from the query;
+This works like the L</key_columns> method.
+
+Drop columns can be useful if you need a particular column in
+the query but don't really want the column in the resultset.
+Some databases are inconsistent with allowing the use of a non-selected
+column in an C<ORDER BY> clause, for instance.
+
+Another use is if you want to compare the value of a column in a
+L</prefer> statement but don't desire the column in the resultset.
+
+It may be most useful to set this value from within the template
+(see L</SYNOPSIS>).
+
+=cut
+
+sub drop_columns {
+	my ($self) = shift;
+	$self->{drop_columns} = [DBIx::RoboQuery::Util::_flatten(@_)]
+		if @_;
+	return @{$self->{drop_columns}};
 }
 
 =method key_columns
