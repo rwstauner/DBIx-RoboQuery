@@ -388,8 +388,9 @@ See note about L</SECURITY>.
 
 =head1 SECURITY
 
-B<NOTE>: This module is B<not> designed to take in external user input
+B<NOTE>: Obviously this module is B<not> designed to take in external user input
 since the SQL queries are passed through a templating engine.
+
 This module is intended for use in internal environments
 where you are the source of the query templates.
 
