@@ -6,11 +6,14 @@ package DBIx::RoboQuery;
 	my $template_string = <<SQL;
 	[%
 		query.key_columns('user_id')
+		query.drop_columns('favorite_smell')
+		query.prefer('favorite_smell != "wet dog"');
 		query.transform('format_date', {fields => 'birthday'});
 	%]
 		SELECT user_id,
 			name,
 			dob as birthday,
+			favorite_smell
 		FROM users
 		WHERE dob < '[% minimum_birthdate() %]'
 	SQL
@@ -33,7 +36,11 @@ package DBIx::RoboQuery;
 
 	my $resultset = $query->resultset;
 
-	# get records (with transformations applied)
+	$resultset->execute;
+	my @non_key = $resultset->non_key_columns;
+	# do something where i want to know the difference key and non-key columns
+
+	# get records (with transformations applied and specified columns dropped)
 	my $records = $resultset->hash; # like DBI/fetchall_hashref
 	# or
 	my $records = $resultset->array; # like DBI/fetchall_arrayref

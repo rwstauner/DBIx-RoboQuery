@@ -3,11 +3,20 @@ package DBIx::RoboQuery::ResultSet;
 
 =head1 SYNOPSIS
 
-	DBIx::RoboQuery::ResultSet->new($query, {opt => 'val'})
+	my $resultset = DBIx::RoboQuery::ResultSet->new($query, {opt => 'val'})
+	# or use $query->resultset
 
-This is the companion to a DBIx::RoboQuery.
-Provides easy access to information about the query
-and enables more powerful configuration of results.
+	$resultset->execute;
+	my @columns = $resultset->columns;
+
+	my $records = $resultset->hash; # like DBI/fetchall_hashref
+	# or $resultset->array          # like DBI/fetchall_arrayref
+
+This is the companion to L<DBIx::RoboQuery>.
+Most things about the ResultSet can be configured on the query.
+The ResultSet provides easy access to information about the query and results.
+
+See L<DBIx::RoboQuery/SYNOPSIS> for a more thorough example.
 
 =cut
 
