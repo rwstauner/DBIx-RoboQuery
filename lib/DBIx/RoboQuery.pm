@@ -234,14 +234,7 @@ sub order {
 	return @{$self->{order}};
 }
 
-=method _pass_through_args
-
-A list of allowed arguments to the constructor that
-will pass through to the new object.
-
-This is mostly here to allow subclasses to easily overwrite it.
-
-=cut
+# convenience method: args allowed in the constructor
 
 sub _pass_through_args {
 	(
