@@ -405,4 +405,6 @@ where you are the source of the query templates.
 
 =for :list
 * Allow for other templating engines (or none at all)
+* Make decisions about how L</order> should with (with regards to ASC/DESC)
+* Setter functions
 * Write a lot more tests
