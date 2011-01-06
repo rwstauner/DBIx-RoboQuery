@@ -62,8 +62,9 @@ The file path of a SQL query [template] (mutually exclusive with C<sql>)
 * C<dbh>
 A database handle (the return of C<< DBI->connect() >>)
 * C<default_slice>
-The default slice of the record returned from
-L<DBIx::RoboQuery::ResultSet/array>.
+The default slice of the records returned;
+Passed to ResultSet object if present.
+See L<DBIx::RoboQuery::ResultSet/array>.
 * C<order>
 An arrayref of column names to specify the sort order of the query;
 If not provided this will be guessed from the SQL statement.
@@ -73,7 +74,7 @@ A string to be prepended to the SQL before parsing the template
 A string to be appended  to the SQL before parsing the template
 * C<transformations>
 An instance of L<Sub::Chain::Group>
-(or a hashref (see L</prepare_transformations>))
+(or a hashref (See L</prepare_transformations>.))
 * C<variables>
 A hashref of variables made available to the template
 
