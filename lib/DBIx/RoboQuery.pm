@@ -72,6 +72,8 @@ A database handle (the return of C<< DBI->connect() >>)
 The default slice of the records returned;
 Passed to ResultSet object if present.
 See L<DBIx::RoboQuery::ResultSet/array>.
+* C<drop_columns>
+An arrayref of columns to be dropped from the resultset;  See L</drop_columns>.
 * C<key_columns>
 An arrayref of [primary key] column names;  See L</key_columns>.
 * C<order>
