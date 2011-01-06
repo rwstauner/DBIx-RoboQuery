@@ -195,8 +195,8 @@ Any arrayrefs provided (when setting the list) will be flattened.
 This allows you to empty the list by sending an empty arrayref
 (if you have a reason to do so).
 
-The key_columns attribute is sent to L<DBI/fetchall_hashref>
-when calling L<DBIx::RoboQuery::ResultSet/hash>.
+L<DBIx::RoboQuery::ResultSet/hash> sends the key columns
+to L<DBI/fetchall_hashref> to define I<unique> records.
 
 It may be most useful to set this value from within the template
 (see L</SYNOPSIS>).
