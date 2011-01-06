@@ -97,4 +97,4 @@ None.
 The functions in this module are not intended for public
 consumption.
 If you choose to ignore this and you really want to
-export a subroutine, see L<Sub::Exporter>.
+import a subroutine, see L<Sub::Exporter>.
