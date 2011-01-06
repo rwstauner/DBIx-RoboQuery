@@ -49,6 +49,11 @@ If they do not exist, they will be looked for on the query object.
 
 See L<DBIx::RoboQuery/new> for the list of options.
 
+B<NOTE>: The constructor will call C<< $query->sql() >>
+(and cache the result) to ensure that the query is fully
+configured before copying some of its attributes
+to the new resultset object.
+
 =cut
 
 sub new {
@@ -58,6 +63,10 @@ sub new {
 	my $self = {
 		query => $query,
 		default_slice => {},
+
+		# Process the template in case it changes anything (like query.key_columns)
+		# so that everything will get passed to the ResultSet.
+		sql => $query->sql(),
 	};
 
 	bless $self, $class;
@@ -200,7 +209,8 @@ Execute the I<query> against the I<dbh>.
 sub execute {
 	my ($self, @params) = @_;
 
-	my $sql = $self->{query}->sql;
+	# the sql attribute is cached from $query->sql in the constructor
+	my $sql = $self->{sql};
 
 	# TODO: Time the query
 	$self->{sth}      = $self->{dbh}->prepare($sql)

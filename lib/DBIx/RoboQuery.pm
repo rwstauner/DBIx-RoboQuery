@@ -355,23 +355,35 @@ sub prefer {
 
 =method resultset
 
+	my $resultset = $query->resultset;
+
 This is a convenience method which returns a
 L<DBIx::RoboQuery::ResultSet> object based upon this query.
 
-Any arguments passed will be passed to the
-L<ResultSet constructor|DBIx::RoboQuery::ResultSet/new>.
+To avoid confusion it caches the result
+so that multiple calls to resultset()
+will return the same object (rather than creating new ones).
 
-This method is aliased as C<results()>.
+If you desire a new resultset
+(which will create a new L<DBI> statement handle)
+or you desire to pass options
+different than the attributes on the query,
+you can manually call L<DBIx::RoboQuery::ResultSet/new>:
+
+	my $resultset = DBIx::ResultSet->new($query, %other_options);
+
+B<NOTE>: The ResultSet constructor calls L</sql>
+before initializing the object
+so that any configuration done to the query in the template
+will be passed to the object at initialization.
 
 =cut
 
 sub resultset {
 	my ($self) = shift;
-	# Process the template in case it changes anything (like query.key_columns)
-	# so that everything will get passed to the ResultSet.
-	$self->sql();
-	# TODO: cache this?
-	$self->{resultset_class}->new($self, @_);
+	# cache this object to avoid confusion
+	return $self->{resultset} ||=
+		$self->{resultset_class}->new($self);
 }
 
 =method sql
@@ -380,6 +392,18 @@ sub resultset {
 	$query->sql({extra => variable});
 
 Process the SQL template and return the result.
+
+This method caches the result of the processed template
+to avoid unexpected side effects of calling any
+configuration directives (that might be in the template) multiple times.
+
+B<NOTE>: This method gets called (without arguments)
+when a resultset is created (to ensure that the query is fully
+configured before copying its attributes to the ResultSet).
+If you need to pass extra template variables
+(that were not passed to L</new>)
+you should call this method (with those variables)
+before instantiating any resultset objects.
 
 =cut
 
