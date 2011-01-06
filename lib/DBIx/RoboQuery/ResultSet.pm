@@ -73,10 +73,7 @@ sub new {
 		}
 	}
 
-	# the columns attributes should be arrayrefs
-	DBIx::RoboQuery::Util::_ensure_arrayrefs($self,
-		qw(key_columns drop_columns)
-	);
+	DBIx::RoboQuery::Util::_ensure_arrayrefs($self);
 
 	$self->{hash_key_name} ||=
 		($self->{dbh} && $self->{dbh}{FetchHashKeyName})
@@ -156,6 +153,13 @@ sub array {
 	return $self->{transformations}
 		? [map { $self->{transformations}->call(@tr_args, $_) } @$rows]
 		: $rows;
+}
+
+# convenience method for subclasses
+
+sub _arrayref_args {
+	my ($self) = @_;
+	return $self->{query}->_arrayref_args;
 }
 
 =method columns
@@ -364,15 +368,15 @@ This is mostly here to allow subclasses to easily overwrite it.
 =cut
 
 sub _pass_through_args {
+	(
+		$_[0]->_arrayref_args,
 	qw(
 		dbh
 		default_slice
-		drop_columns
 		hash_key_name
-		key_columns
 		preferences
 		transformations
-	);
+	));
 }
 
 =method preference

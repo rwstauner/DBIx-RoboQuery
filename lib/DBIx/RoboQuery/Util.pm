@@ -17,6 +17,11 @@ use warnings;
 
 sub _ensure_arrayrefs {
 	my ($hash, @keys) = @_;
+
+	# if no keys were provided, use the defaults
+	@keys = $hash->_arrayref_args
+		if !@keys;
+
 	foreach my $key ( @keys ){
 		if( exists $hash->{$key} ){
 			$hash->{$key} = [$hash->{$key}]

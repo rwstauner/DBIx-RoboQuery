@@ -102,9 +102,7 @@ sub new {
 		$self->{$var} = $opts{$var} if exists($opts{$var});
 	}
 
-	DBIx::RoboQuery::Util::_ensure_arrayrefs($self,
-		qw(key_columns order)
-	);
+	DBIx::RoboQuery::Util::_ensure_arrayrefs($self);
 
 	croak(q|Cannot include both 'sql' and 'file'|)
 		if exists($opts{sql}) && exists($opts{file});
@@ -136,6 +134,16 @@ sub new {
 		or die "Query error: Template::Toolkit failed: $Template::ERROR\n";
 
 	return $self;
+}
+
+# convenience method for subclasses
+
+sub _arrayref_args {
+	qw(
+		drop_columns
+		key_columns
+		order
+	);
 }
 
 =method drop_columns
@@ -236,17 +244,17 @@ This is mostly here to allow subclasses to easily overwrite it.
 =cut
 
 sub _pass_through_args {
+	(
+		$_[0]->_arrayref_args,
 	qw(
 		dbh
 		default_slice
-		key_columns
-		order
 		prefix
 		resultset_class
 		suffix
 		transformations
 		variables
-	);
+	));
 }
 
 =method prepare_transformations
