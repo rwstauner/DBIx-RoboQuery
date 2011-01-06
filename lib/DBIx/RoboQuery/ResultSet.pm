@@ -323,6 +323,11 @@ sub hash {
 
 Return a list of the primary key columns from the query.
 
+The key_columns attribute should be set on the
+L<Query|DBIx::RoboQuery> object.
+This read-only accessor is provided here for convenience
+and consistency with the other 'column' attributes.
+
 =cut
 
 sub key_columns {
