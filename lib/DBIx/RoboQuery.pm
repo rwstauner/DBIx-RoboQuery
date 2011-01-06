@@ -50,13 +50,7 @@ use Template 2.22; # Template Toolkit
 
 =method new
 
-First argument is the sql template to process.
-
-=for :list
-* A string is treated as a filename,
-* A scalar reference is treated as the template text.
-
-The second argument is a hash or hashref of options:
+Constructor;  Accepts a hash or hashref of options:
 
 =for :list
 * C<sql>
