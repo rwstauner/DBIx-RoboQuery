@@ -59,6 +59,8 @@ use Template 2.22; # Template Toolkit
 
 =method new
 
+	my $query = DBIx::RoboQuery->new(%opts); # or \%opts
+
 Constructor;  Accepts a hash or hashref of options:
 
 =for :list
@@ -159,6 +161,11 @@ sub _arrayref_args {
 
 =method drop_columns
 
+	# get
+	my @drop_columns = $query->drop_columns;
+	# set
+	$query->drop_columns(@columns_to_ignore);
+
 Accessor for the list of columns to drop (remove) from the query;
 This works like the L</key_columns> method.
 
@@ -213,6 +220,11 @@ sub key_columns {
 }
 
 =method order
+
+	# get
+	my @order = $query->order;
+	# set
+	$query->order(@column_order);
 
 Accessor for the list of the column names of the sort order of the query;
 
