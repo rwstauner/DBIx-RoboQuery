@@ -412,6 +412,8 @@ the last encountered record is the one saved to the hash and returned.
 This "last one in wins" logic is preserved in this method
 for any records that cannot be determined by the specified preference rules.
 
+See L<DBIx::RoboQuery/prefer> for details on specifying record preferences.
+
 =cut
 
 sub preference {
