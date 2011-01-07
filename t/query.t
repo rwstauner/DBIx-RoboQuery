@@ -63,8 +63,8 @@ my @templates = (
 	]
 );
 
-# (require + isa Q) + throws + templates + (key_columns) + (process once) + (isa R) + preferences
-plan tests => 2 + 2 + @templates + 4 + 12 + 1 + 4;
+# (require + isa Q) + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
+plan tests => 2 + 2 + @templates + 4 + 12 + 1 + 4 + 5;
 
 my $mod = 'DBIx::RoboQuery';
 require_ok($mod);
@@ -125,3 +125,24 @@ $query->prefer('see you later');
 is_deeply($query->{preferences}, ['hello', 'goodbye', 'see you later'], 'preferences set with prefer()');
 # passed to resultset
 is_deeply($query->resultset->{preferences}, ['hello', 'goodbye', 'see you later'], 'preferences set with prefer()');
+
+my $sub_query = 'TRoboQuery';
+eval "require $sub_query";
+die $@ if $@;
+my $sub_resultset = "${sub_query}::ResultSet";
+
+# automatic resultset_class
+my $test_subq = $sub_query->new(sql => '');
+isa_ok($test_subq, $sub_query);
+isa_ok($test_subq->resultset, $sub_resultset);
+
+# explicit resultset_class
+$sub_resultset = "${sub_query}::ResultSet2";
+$test_subq = $sub_query->new(sql => '', resultset_class => $sub_resultset);
+isa_ok($test_subq, $sub_query);
+isa_ok($test_subq->resultset, $sub_resultset);
+
+throws_ok(sub { $sub_query->new(sql => '', resultset_class => "$sub_resultset; print STDERR qw(oops);")->resultset; },
+	qr{TRoboQuery/ResultSet2printSTDERRqwoops.pm}, 'tainted module cannot be loaded');
+
+done_testing;
