@@ -54,7 +54,7 @@ based on the ORDER BY clause of a SQL statement.
 Options can be specified in a hashref:
 
 =for :list
-* I<suffix>
+* C<suffix>
 A string of sql (or a regular expression compiled with qr//)
 that follows the ORDER BY clause;
 Often ORDER BY is the last clause of the statement.

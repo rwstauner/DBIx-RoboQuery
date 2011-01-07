@@ -126,7 +126,7 @@ B<However>, if no arguments are supplied, an empty C<{}> will be sent
 to C<fetchall_arrayref> to make it return an array of hash refs.
 
 If this deviation is undesired,
-you can set I<default_slice> to C<[]> to return to the DBI default.
+you can set C<default_slice> to C<[]> to return to the DBI default.
 Like many options this can be set on the Query or the ResultSet.
 
 	DBIx::RoboQuery->new(default_slice => [], %opts);
@@ -263,17 +263,17 @@ Returns a tree of hashrefs like
 L<DBI/fetchall_hashref>.
 
 Records will be stored (and considered unique)
-according to the I<key_columns> attribute.
-If more than one record has the same values for I<key_columns>
+according to the C<key_columns> attribute.
+If more than one record has the same values for C<key_columns>
 the last record from the database will be returned.
 
-The I<preferences> attribute can be used to determine which record
+The C<preferences> attribute can be used to determine which record
 to select instead of simply the last one received.
 See L<the preference() method|/preference> for more information,
 or L<DBIx::RoboQuery/prefer>
 for how to write and store the preference rules.
 
-An error is thrown if I<key_columns> is empty.
+An error is thrown if C<key_columns> is empty.
 L<DBI/fetchall_hashref> doesn't check the length of key_columns.
 An empty array ends up returning a single hash (the last row)
 instead of the hash tree which can be very confusing
@@ -461,7 +461,7 @@ sub query {
 
 While there is I<some> error checking,
 the module probably assumes you're setting L<DBI/RaiseError>
-to true on your I<dbh>.
+to true on your C<dbh>.
 
 If you don't use L<DBI/RaiseError>, and you experience problems,
 please let me know (submit a patch or a bug report).
