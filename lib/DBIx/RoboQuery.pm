@@ -384,8 +384,15 @@ will be passed to the object at initialization.
 sub resultset {
 	my ($self) = shift;
 	# cache this object to avoid confusion
-	return $self->{resultset} ||=
-		$self->{resultset_class}->new($self);
+	return $self->{resultset} ||= do {
+		# taint check
+		(my $class = $self->{resultset_class}) =~ s/[^a-zA-Z0-9_:']+//g;
+		# make sure it's loaded first
+		eval "require $class";
+		die $@ if $@;
+
+		$class->new($self);
+	}
 }
 
 =method sql
