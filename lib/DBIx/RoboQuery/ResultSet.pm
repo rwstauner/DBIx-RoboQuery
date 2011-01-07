@@ -28,7 +28,7 @@ use Carp qw(croak carp);
 
 	DBIx::RoboQuery::ResultSet->new($query, opt => 'val');
 
-	# Can also be instantiated from a Query object:
+	# Can also be instantiated from a query object:
 	DBIx::RoboQuery->new(sql => $sql)->resultset(opt => 'val');
 
 The first argument should be a L<DBIx::RoboQuery> instance.
@@ -127,7 +127,7 @@ to C<fetchall_arrayref> to make it return an array of hash refs.
 
 If this deviation is undesired,
 you can set C<default_slice> to C<[]> to return to the DBI default.
-Like many options this can be set on the Query or the ResultSet.
+Like many options this can be set on the query or the resultset.
 
 	DBIx::RoboQuery->new(default_slice => [], %opts);
 
@@ -353,7 +353,7 @@ sub hash {
 Return a list of the primary key columns from the query.
 
 The key_columns attribute should be set on the
-L<Query|DBIx::RoboQuery> object.
+L<DBIx::RoboQuery> object.
 This read-only accessor is provided here for convenience
 and consistency with the other 'column' attributes.
 

@@ -144,7 +144,7 @@ sub new {
 			%{$self->{variables}}
 		}
 	)
-		or die "Query error: Template::Toolkit failed: $Template::ERROR\n";
+		or die "$class error: Template::Toolkit failed: $Template::ERROR\n";
 
 	return $self;
 }
@@ -339,7 +339,7 @@ if you use C<< resultset->hash() >> and multiple records are found
 for any given key field(s).
 
 The "rules" are strings that will be processed by the templating engine
-of the Query object (currently L<Template::Toolkit|Template>).
+of the query object (currently L<Template::Toolkit|Template>).
 The record's fields will be available as variables.
 
 Each rule will be tested with each record and the first one to match
