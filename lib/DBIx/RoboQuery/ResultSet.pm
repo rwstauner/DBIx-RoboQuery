@@ -354,7 +354,7 @@ Return a list of the primary key columns from the query.
 
 The C<key_columns> attribute should be set on the query object.
 This read-only accessor is provided here for convenience
-and consistency with the other 'column' attributes.
+and consistency with the other I<column> attributes.
 
 =cut
 
@@ -402,7 +402,7 @@ sub _pass_through_args {
 
 	$resultset->preference($record1, $record2);
 
-This is used internally by the L</hash>() method to determine which record
+This is used internally by the L</hash> method to determine which record
 it should choose when multiple records have the same key value(s).
 
 When L<DBI/fetchall_hashref>
