@@ -453,7 +453,8 @@ sub sql {
 
 =method transform
 
-	$query->transform($sub, $type, [qw(fields)], @arguments);
+	$query->transform($sub, %opts);
+	$query->transform($sub, fields => [qw(fld1 fld2)], args => []);
 
 Add a transformation to be applied to the result data.
 
