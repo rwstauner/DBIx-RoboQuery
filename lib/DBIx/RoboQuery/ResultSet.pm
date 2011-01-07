@@ -456,7 +456,7 @@ sub query {
 
 1;
 
-=for stopwords DBI's
+=for stopwords DBI's hashrefs
 
 =head1 CAVEATS
 
