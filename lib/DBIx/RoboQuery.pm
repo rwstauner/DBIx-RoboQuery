@@ -283,7 +283,7 @@ prepares the C<transformations> attribute
 This method provides a shortcut for convenience:
 If C<transformations> is a simple hash,
 it is assumed to be a hash of named subs and is passed to
-L<< Sub::Chain::Group->new() | Sub::Chain::Group/new >>
+L<Sub::Chain::Group/new>
 as the C<subs> key of the C<chain_args> hashref.
 See L<Sub::Chain::Group> and L<Sub::Chain::Named>
 for more information about these.
