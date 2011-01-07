@@ -74,7 +74,7 @@ The file path of a SQL query [template] (mutually exclusive with C<sql>)
 A database handle (the return of C<< DBI->connect() >>)
 * C<default_slice>
 The default slice of the records returned;
-Passed to ResultSet object if present.
+It is not used by the query but merely passed to the ResultSet object.
 See L<DBIx::RoboQuery::ResultSet/array>.
 * C<drop_columns>
 An arrayref of columns to be dropped from the resultset;  See L</drop_columns>.
