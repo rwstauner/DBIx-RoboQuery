@@ -274,7 +274,7 @@ or L<DBIx::RoboQuery/prefer>
 for how to write and store the preference rules.
 
 An error is thrown if C<key_columns> is empty.
-L<DBI/fetchall_hashref> doesn't check the length of key_columns.
+L<DBI/fetchall_hashref> doesn't check the length of C<key_columns>.
 An empty array ends up returning a single hash (the last row)
 instead of the hash tree which can be very confusing
 and surely is not desired.
@@ -352,7 +352,7 @@ sub hash {
 
 Return a list of the primary key columns from the query.
 
-The key_columns attribute should be set on the
+The C<key_columns> attribute should be set on the
 L<DBIx::RoboQuery> object.
 This read-only accessor is provided here for convenience
 and consistency with the other 'column' attributes.
