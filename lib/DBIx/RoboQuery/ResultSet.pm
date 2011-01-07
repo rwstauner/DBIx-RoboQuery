@@ -93,6 +93,9 @@ sub new {
 
 =method array
 
+	my $array_of_hashes = $resultset->array;
+	# or an array of arrays if 'default_slice' is set to an arrayref
+
 Calls L<fetchall_arrayref|DBI/fetchall_arrayref>(@_)
 on the DBI statement handle (passing any supplied arguments).
 
@@ -126,7 +129,7 @@ If this deviation is undesired,
 you can set I<default_slice> to C<[]> to return to the DBI default.
 Like many options this can be set on the Query or the ResultSet.
 
-	Query->new(default_slice => []);
+	DBIx::RoboQuery->new(default_slice => [], %opts);
 
 =cut
 
@@ -173,12 +176,15 @@ sub _arrayref_args {
 
 =method columns
 
+	my @columns = $resultset->columns;
+
 Return the columns of the result set.
 
 This includes key and non-key columns
 and excludes dropped columns.
 
-This is only useful after the query has been executed.
+This is only useful after the query has been executed
+(and will C<croak> if it has not been).
 
 =cut
 
@@ -191,6 +197,8 @@ sub columns {
 
 =method drop_columns
 
+	my @columns = $resultset->drop_columns;
+
 Return a list of the column names being dropped
 (ignored) from the result set.
 
@@ -202,7 +210,9 @@ sub drop_columns {
 
 =method execute
 
-Execute the I<query> against the I<dbh>.
+	$resultset->execute();
+
+Execute the C<query> against the C<dbh>.
 
 =cut
 
@@ -244,9 +254,12 @@ sub execute {
 
 	return $self->{executed};
 }
+
 =method hash
 
-Returns a tree of hash refs like
+	my $hash_of_hashes = $resultset->hash;
+
+Returns a tree of hashrefs like
 L<DBI/fetchall_hashref>.
 
 Records will be stored (and considered unique)
@@ -335,6 +348,8 @@ sub hash {
 
 =method key_columns
 
+	my @keys = $resultset->key_columns;
+
 Return a list of the primary key columns from the query.
 
 The key_columns attribute should be set on the
@@ -350,6 +365,8 @@ sub key_columns {
 }
 
 =method non_key_columns
+
+	my @other = $resultset->non_key_columns;
 
 Return a list of the other columns from the query.
 
@@ -424,7 +441,9 @@ sub preference {
 
 =method query
 
-Returns the query object.
+	my $query = $resultset->query;
+
+Returns the query object (in case you lost it).
 
 =cut
 
