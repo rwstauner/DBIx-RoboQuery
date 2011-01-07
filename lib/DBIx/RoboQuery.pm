@@ -1,6 +1,8 @@
 package DBIx::RoboQuery;
 # ABSTRACT: Very configurable/programmable query object
 
+# NOTE: This SYNOPSIS is read in and tested in xt/author/synopsis.t
+
 =head1 SYNOPSIS
 
 	my $template_string = <<SQL;
