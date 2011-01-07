@@ -51,6 +51,11 @@ my @order = (
 		[qw(fld1 fld2)],
 		{suffix => qr/LIMIT\s+   \d+/x}
 	],
+	[
+		"SELECT * FROM table\nORDER BY\nfldA DESC,\nfld2 ASC, fldD\nLIMIT\n2",
+		[qw(fldA fld2 fldD)],
+		{suffix => qr/LIMIT\s+   \d+/x}
+	],
 	# TODO: "SELECT * FROM table WHERE order_clause = 'ORDER BY something' ORDER BY order_clause"
 );
 

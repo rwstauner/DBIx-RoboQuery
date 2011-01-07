@@ -69,6 +69,9 @@ Other modules that could be used instead:
 * L<SQL::Statement>
 * L<SQL::OrderBy>
 
+Currently a flat list of column names is returned.
+(Any direction (ASC or DESC) is dropped.)
+
 =cut
 
 sub order_from_sql {
@@ -86,14 +89,17 @@ sub order_from_sql {
 	$sql =~ /\bORDER\s+BY\s+         # start order by clause
 		(                            # start capture
 			(?:\w+)                  # first column
+			(?:\s+(?:ASC|DESC))?     # direction
 			(?:\s*,\s*               # comma, possibly spaced
 				(?:\w+)              # next column
+				(?:\s+(?:ASC|DESC))? # direction
 			)*                       # repeat
 		)\s*                         # end capture
 		$suffix                      # possible query suffix
 		\s*;?\s*\Z                   # end of SQL
 	/isx
-		? split(/\s*,\s*/, $1)
+		# ignore direction
+		? map { s/\s+(ASC|DESC)$//; $_ } split(/\s*,\s*/, $1)
 		: ();
 }
 

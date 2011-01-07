@@ -516,5 +516,5 @@ where you are the source of the query templates.
 
 =for :list
 * Allow for other templating engines (or none at all)
-* Make decisions about how L</order> should with (with regards to ASC/DESC)
+* Consider an option for including direction (C<ASC>/C<DESC>) in L</order>
 * Write a lot more tests
