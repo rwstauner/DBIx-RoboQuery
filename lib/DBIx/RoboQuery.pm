@@ -315,7 +315,9 @@ sub prepare_transformations {
 
 =method pre_process_sql
 
-Prepend I<prefix> and append I<suffix>.
+Prepend C<prefix> and append C<suffix>.
+Called from L</sql> before processing the template
+with the template engine.
 
 =cut
 
