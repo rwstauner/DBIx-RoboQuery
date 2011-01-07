@@ -81,7 +81,8 @@ sub get_synopsis_pod {
 			if( $para->{command} eq 'head1' && $para->{content} =~ /SYNOPSIS/ ){
 				$in_synopsis = 1;
 			}
-			elsif( $para->{command} eq 'cut' ){
+			# the next command after =head1 SYNOPSIS ends the synopsis
+			elsif( $in_synopsis && $para->{command} ){
 				last;
 			}
 		}
