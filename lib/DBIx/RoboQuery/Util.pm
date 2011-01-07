@@ -39,11 +39,11 @@ sub _flatten {
 =func order_from_sql
 
 	# returns qw(fld1)
-	@order = order_from_sql("SELECT * FROM table ORDER BY field");
+	@order = order_from_sql("SELECT * FROM table ORDER BY fld1");
 
 	# returns qw(fld1 fld2)
 	@order = order_from_sql(
-		"SELECT * FROM table ORDER BY fld1, fld2 FETCH 2 ROWS",
+		"SELECT * FROM table ORDER BY fld1 DESC, fld2 FETCH 2 ROWS",
 		{suffix => 'FETCH 2 ROWS'}
 	);
 		# suffix can also be an re: qr/FETCH \d+ ROWS/
