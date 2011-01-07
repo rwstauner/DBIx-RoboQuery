@@ -105,6 +105,8 @@ sub order_from_sql {
 
 1;
 
+=for stopwords ASC DESC
+
 =head1 EXPORTS
 
 None.

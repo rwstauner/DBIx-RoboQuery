@@ -458,6 +458,8 @@ sub transform {
 
 1;
 
+=for stopwords TODO arrayrefs
+
 =for Pod::Coverage result results
 
 =head1 DESCRIPTION
