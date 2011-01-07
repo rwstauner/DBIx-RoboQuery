@@ -269,7 +269,7 @@ the last record from the database will be returned.
 
 The C<preferences> attribute can be used to determine which record
 to select instead of simply the last one received.
-See L<the preference() method|/preference> for more information,
+See L</preference> for more information,
 or L<DBIx::RoboQuery/prefer>
 for how to write and store the preference rules.
 
