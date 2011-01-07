@@ -49,15 +49,15 @@ sub _flatten {
 		# suffix can also be an re: qr/FETCH \d+ ROWS/
 
 Return a list of the column names that make up the sort order
-based on the ORDER BY clause of a SQL statement.
+based on the C<ORDER BY> clause of a SQL statement.
 
 Options can be specified in a hashref:
 
 =for :list
 * C<suffix>
 A string of sql (or a regular expression compiled with qr//)
-that follows the ORDER BY clause;
-Often ORDER BY is the last clause of the statement.
+that follows the C<ORDER BY> clause;
+Often C<ORDER BY> is the last clause of the statement.
 To anchor the regular expression used to find the ORDER BY clause
 to the end of the string,
 specify a string or regexp that follows the ORDER BY clause
@@ -70,7 +70,7 @@ Other modules that could be used instead:
 * L<SQL::OrderBy>
 
 Currently a flat list of column names is returned.
-(Any direction (ASC or DESC) is dropped.)
+(Any direction (C<ASC> or C<DESC>) is dropped.)
 
 =cut
 
