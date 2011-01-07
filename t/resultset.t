@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::MockObject;
+use Test::MockObject 1.09;
 use lib 't/lib';
 use THelper;
 
