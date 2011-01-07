@@ -166,7 +166,7 @@ sub _arrayref_args {
 	# set
 	$query->drop_columns(@columns_to_ignore);
 
-Accessor for the list of columns to drop (remove) from the query;
+Accessor for the list of columns to drop (remove) from the resultset;
 This works like the L</key_columns> method.
 
 Drop columns can be useful if you need a particular column in
@@ -174,8 +174,9 @@ the query but don't really want the column in the resultset.
 Some databases are inconsistent with allowing the use of a non-selected
 column in an C<ORDER BY> clause, for instance.
 
-Another use is if you want to compare the value of a column in a
-L</prefer> statement but don't desire the column in the resultset.
+Drop columns can also be useful if you want to compare the value of a column
+in a preference statement (see L</prefer>)
+but don't want the column in the actual resultset.
 
 It may be most useful to set this value from within the template
 (see L</SYNOPSIS>).
