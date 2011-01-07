@@ -5,10 +5,10 @@ package DBIx::RoboQuery;
 
 	my $template_string = <<SQL;
 	[%
-		query.key_columns('user_id')
-		query.drop_columns('favorite_smell')
-		query.prefer('favorite_smell != "wet dog"');
-		query.transform('format_date', {fields => 'birthday'});
+		CALL query.key_columns('user_id');
+		CALL query.drop_columns('favorite_smell');
+		CALL query.prefer('favorite_smell != "wet dog"');
+		CALL query.transform('format_date', {fields => 'birthday'});
 	%]
 		SELECT user_id,
 			name,
@@ -23,10 +23,11 @@ package DBIx::RoboQuery;
 		sql => $template_string,       # (or use file => $filepath)
 		dbh => $dbh,                   # handle returned from DBI->connect()
 		transformations => {           # functions available for transformation
-			format_date => \&aribtrary_date_format
-		}
+			format_date => \&arbitrary_date_format,
+			trim => sub { (my $s = $_[0]) =~ s/^\s+|\s+$//g; $s },
+		},
 		variables => {                 # variables for use in template
-			minimum_birthdate => \&arbitrary_date_function
+			minimum_birthdate => \&arbitrary_date_function,
 		}
 	);
 
@@ -41,9 +42,8 @@ package DBIx::RoboQuery;
 	# do something where i want to know the difference key and non-key columns
 
 	# get records (with transformations applied and specified columns dropped)
-	my $records = $resultset->hash; # like DBI/fetchall_hashref
-	# or
-	my $records = $resultset->array; # like DBI/fetchall_arrayref
+	my $records = $resultset->hash;            # like DBI/fetchall_hashref
+	# OR: my $records = $resultset->array;     # like DBI/fetchall_arrayref
 
 =cut
 
