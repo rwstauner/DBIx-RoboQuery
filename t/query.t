@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More 0.96;
 use lib 't/lib';
 use THelper;
 
@@ -63,11 +63,11 @@ my @templates = (
 	]
 );
 
-# (require + isa Q) + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
-plan tests => 2 + 2 + @templates + 4 + 12 + 1 + 4 + 5;
+# isa + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
+plan tests => 1 + 2 + @templates + 4 + 12 + 1 + 4 + 5;
 
 my $mod = 'DBIx::RoboQuery';
-require_ok($mod);
+eval "require $mod" or die $@;
 isa_ok($mod->new(sql => 'SQL'), $mod);
 
 	# one of sql or file but not both

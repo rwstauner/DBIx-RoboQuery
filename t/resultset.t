@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More 0.96;
 use Test::MockObject 1.09;
 use lib 't/lib';
 use THelper;
@@ -13,12 +13,12 @@ my $transformations = {
 	uc => sub { uc $_[0] }
 };
 
-require_ok($qmod);
+eval "require $qmod" or die $@;
 my $query = $qmod->new(sql => "SELECT * FROM table1", transformations => $transformations);
 isa_ok($query, $qmod);
 
 my $rmod = 'DBIx::RoboQuery::ResultSet';
-require_ok($rmod);
+eval "require $rmod" or die $@;
 
 my @non_keys = qw(goo ber bar baz beft blou lou);
 my @columns = (qw(foo boo), @non_keys);

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More 0.96;
 use DBIx::RoboQuery;
 
 # try to keep things a little organized... script near the top, helper subs at the bottom

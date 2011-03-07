@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More 0.96;
 use DBIx::RoboQuery::Util ();
 *order_from_sql = \&DBIx::RoboQuery::Util::order_from_sql;
 
