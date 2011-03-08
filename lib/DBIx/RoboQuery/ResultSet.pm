@@ -252,6 +252,9 @@ sub execute {
 		}
 	}
 
+	# FIXME: check $self->{sth}->errstr (or someting: see DBI)
+	# to make sure we got all records without error
+
 	return $self->{executed};
 }
 
