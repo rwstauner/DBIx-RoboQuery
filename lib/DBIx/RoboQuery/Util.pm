@@ -112,5 +112,3 @@ sub order_from_sql {
 None.
 The functions in this module are not intended for public
 consumption.
-If you choose to ignore this and you really want to
-import a subroutine, see L<Sub::Exporter>.
