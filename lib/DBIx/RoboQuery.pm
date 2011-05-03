@@ -505,9 +505,7 @@ The query can be built with templates
 which allows for perl variables and functions
 to interpolate and/or generate the SQL
 
-=item *
-
-The output can be transformed (using L<Sub::Chain::Group>)
+* The output can be transformed (using L<Sub::Chain::Group>)
 
 * TODO: list more
 
