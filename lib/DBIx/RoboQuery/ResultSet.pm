@@ -460,6 +460,7 @@ sub query {
 1;
 
 =for stopwords DBI's hashrefs
+TODO
 
 =head1 CAVEATS
 
@@ -469,3 +470,8 @@ to true on your C<dbh>.
 
 If you don't use L<DBI/RaiseError>, and you experience problems,
 please let me know (submit a patch or a bug report).
+
+=head1 TODO
+
+=for :list
+* Evaluate preference for L</array> if key_columns is set?

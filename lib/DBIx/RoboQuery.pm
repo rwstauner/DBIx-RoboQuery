@@ -535,3 +535,4 @@ where you are the source of the query templates.
 * Consider an option for including direction (C<ASC>/C<DESC>) in L</order>
 * Write a lot more tests
 * Add a method to pass bind parameters (which will pass to C<< $sth->execute >>)
+* Accept transformations or callbacks that operate on the whole row?
