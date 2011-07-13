@@ -1,14 +1,6 @@
 package DBIx::RoboQuery::Util;
 # ABSTRACT: Utility functions for DBIx::RoboQuery
 
-=head1 SYNOPSIS
-
-	use DBIx::RoboQuery::Util ();
-
-A collection of utility functions for L<DBIx::RoboQuery>.
-
-=cut
-
 use strict;
 use warnings;
 
@@ -106,6 +98,14 @@ sub order_from_sql {
 1;
 
 =for stopwords ASC DESC
+
+=head1 SYNOPSIS
+
+  use DBIx::RoboQuery::Util ();
+
+=head1 DESCRIPTION
+
+A collection of utility functions for L<DBIx::RoboQuery>.
 
 =head1 EXPORTS
 

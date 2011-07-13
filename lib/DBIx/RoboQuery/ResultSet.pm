@@ -1,25 +1,6 @@
 package DBIx::RoboQuery::ResultSet;
 # ABSTRACT: Configure the results to get what you want
 
-=head1 SYNOPSIS
-
-	my $resultset = DBIx::RoboQuery::ResultSet->new($query, {opt => 'val'})
-	# or use $query->resultset
-
-	$resultset->execute;
-	my @columns = $resultset->columns;
-
-	my $records = $resultset->hash; # like DBI/fetchall_hashref
-	# or $resultset->array          # like DBI/fetchall_arrayref
-
-This is the companion to L<DBIx::RoboQuery>.
-Most things about the ResultSet can be configured on the query.
-The ResultSet provides easy access to information about the query and results.
-
-See L<DBIx::RoboQuery/SYNOPSIS> for a more thorough example.
-
-=cut
-
 use strict;
 use warnings;
 use Carp qw(croak carp);
@@ -461,6 +442,28 @@ sub query {
 
 =for stopwords DBI's hashrefs
 TODO
+
+=for test_synopsis
+my $query;
+
+=head1 SYNOPSIS
+
+  my $resultset = DBIx::RoboQuery::ResultSet->new($query, {opt => 'val'});
+  # or use $query->resultset
+
+  $resultset->execute;
+  my @columns = $resultset->columns;
+
+  my $records = $resultset->hash; # like DBI/fetchall_hashref
+  # or $resultset->array          # like DBI/fetchall_arrayref
+
+=head1 DESCRIPTION
+
+This is the companion to L<DBIx::RoboQuery>.
+Most things about the ResultSet can be configured on the query.
+The ResultSet provides easy access to information about the query and results.
+
+See L<DBIx::RoboQuery/SYNOPSIS> for a more thorough example.
 
 =head1 CAVEATS
 

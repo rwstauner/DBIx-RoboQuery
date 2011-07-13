@@ -9,7 +9,7 @@ use DBIx::RoboQuery;
 my ($dbd, $pod_parser) = qw(SQLite Pod::Eventual::Simple);
 foreach my $req ( 'DBI', "DBD::$dbd", $pod_parser ){
 	eval "require $req";
-	plan skip_all => "$req required for this author test"
+	plan skip_all => "$req required for this test"
 		if $@;
 }
 
@@ -90,6 +90,5 @@ sub get_synopsis_pod {
 			$pod .= $para->{content};
 		}
 	}
-	# chop the first tab off of each line (verbatim paragraph)
-	return join("\n", map { s/^\t//; $_ } split(/\n/, $pod)) . "\n";
+  return $pod;
 }

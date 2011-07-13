@@ -1,54 +1,6 @@
 package DBIx::RoboQuery;
 # ABSTRACT: Very configurable/programmable query object
 
-# NOTE: This SYNOPSIS is read in and tested in xt/author/synopsis.t
-
-=head1 SYNOPSIS
-
-	my $template_string = <<SQL;
-	[%
-		CALL query.key_columns('user_id');
-		CALL query.drop_columns('favorite_smell');
-		CALL query.prefer('favorite_smell != "wet dog"');
-		CALL query.transform('format_date', {fields => 'birthday'});
-	%]
-		SELECT user_id,
-			name,
-			dob as birthday,
-			favorite_smell
-		FROM users
-		WHERE dob < '[% minimum_birthdate() %]'
-	SQL
-
-	# create query object from template
-	my $query = DBIx::RoboQuery->new(
-		sql => $template_string,       # (or use file => $filepath)
-		dbh => $dbh,                   # handle returned from DBI->connect()
-		transformations => {           # functions available for transformation
-			format_date => \&arbitrary_date_format,
-			trim => sub { (my $s = $_[0]) =~ s/^\s+|\s+$//g; $s },
-		},
-		variables => {                 # variables for use in template
-			minimum_birthdate => \&arbitrary_date_function,
-		}
-	);
-
-	# transformations (and other configuration) can be specified in the sql
-	# template or in your code if you know you'll always want certain ones
-	$query->transform('trim', group => 'non_key_columns');
-
-	my $resultset = $query->resultset;
-
-	$resultset->execute;
-	my @non_key = $resultset->non_key_columns;
-	# do something where i want to know the difference key and non-key columns
-
-	# get records (with transformations applied and specified columns dropped)
-	my $records = $resultset->hash;            # like DBI/fetchall_hashref
-	# OR: my $records = $resultset->array;     # like DBI/fetchall_arrayref
-
-=cut
-
 use strict;
 use warnings;
 
@@ -477,6 +429,56 @@ sub transform {
 =for stopwords TODO arrayrefs
 
 =for Pod::Coverage result results
+
+=for test_synopsis
+my $dbh; # NOTE: This SYNOPSIS is read in and tested in t/synopsis.t
+
+=head1 SYNOPSIS
+
+  my $template_string = <<'  SQL';
+  [%
+    CALL query.key_columns('user_id');
+    CALL query.drop_columns('favorite_smell');
+    CALL query.prefer('favorite_smell != "wet dog"');
+    CALL query.transform('format_date', {fields => 'birthday'});
+  %]
+    SELECT user_id,
+      name,
+      dob as birthday,
+      favorite_smell
+    FROM users
+    WHERE dob < '[% minimum_birthdate() %]'
+  SQL
+
+  # create query object from template
+  my $query = DBIx::RoboQuery->new(
+    sql => $template_string,       # (or use file => $filepath)
+    dbh => $dbh,                   # handle returned from DBI->connect()
+    transformations => {           # functions available for transformation
+      format_date => \&arbitrary_date_format,
+      trim => sub { (my $s = $_[0]) =~ s/^\s+|\s+$//g; $s },
+    },
+    variables => {                 # variables for use in template
+      minimum_birthdate => \&arbitrary_date_function,
+    }
+  );
+
+  # transformations (and other configuration) can be specified in the sql
+  # template or in your code if you know you'll always want certain ones
+  $query->transform('trim', group => 'non_key_columns');
+
+  my $resultset = $query->resultset;
+
+  $resultset->execute;
+  my @non_key = $resultset->non_key_columns;
+  # do something where i want to know the difference key and non-key columns
+
+  # get records (with transformations applied and specified columns dropped)
+  my $records = $resultset->hash;            # like DBI/fetchall_hashref
+  # OR: my $records = $resultset->array;     # like DBI/fetchall_arrayref
+
+=cut
+
 
 =head1 DESCRIPTION
 
