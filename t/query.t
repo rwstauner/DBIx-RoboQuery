@@ -1,3 +1,4 @@
+# vim: set ts=2 sts=2 sw=2 expandtab smarttab:
 use strict;
 use warnings;
 use Test::More 0.96;
@@ -14,53 +15,53 @@ my $transformations = {trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s }};
 
 # This is mostly testing Template Toolkit which probably isn't useful
 my @templates = (
-	[
-		{file => $tmp->filename},
-		qq|hello false|
-	],
-	[
-		{sql => qq|hello [% IF 1 %]true[% END %]|},
-		qq|hello true|
-	],
-	[
-		{sql => qq|hello [% "there" %]|},
-		qq|hello there|
-	],
-	[
-		{sql => qq|hello [% "there" %]|, suffix => ', you'},
-		qq|hello there, you|
-	],
-	[
-		{sql => qq|hello [% hello.there %]/[% hello.you %]|},
-		qq|hello silly/rabbit|
-	],
-	[
-		{sql => qq|hello [% hello.there %]/[% hello.you %]|, prefix => 'why ', suffix => "\nhead."},
-		qq|why hello silly/rabbit\nhead.|,
-	],
-	[
-		{sql => qq|[% MACRO pref(f) CALL query.prefer(f); pref('hello IS NULL') -%]\n[% pref('t'); query.preferences.join() %]|},
-		qq|hello IS NULL t|,
-	],
-	[
-		{sql => qq|[% CALL query.transform('trim', 'fields', ['address']); GET query.transformations.queue.first.first %]|, transformations => $transformations},
-		qq|trim|,
-	],
-	[
-		{sql => $cond_while},
-		qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
-		{account_numbers => [' D001 ', 'D002']}
-	],
-	[
-		{sql => $cond_while},
-		qq|1   WHERE  account_number LIKE '%D002%' |,
-		{account_numbers => ['D00 2']}
-	],
-	[
-		{sql => $cond_while},
-		qq|1 |,
-		{account_numbers => []}
-	]
+  [
+    {file => $tmp->filename},
+    qq|hello false|
+  ],
+  [
+    {sql => qq|hello [% IF 1 %]true[% END %]|},
+    qq|hello true|
+  ],
+  [
+    {sql => qq|hello [% "there" %]|},
+    qq|hello there|
+  ],
+  [
+    {sql => qq|hello [% "there" %]|, suffix => ', you'},
+    qq|hello there, you|
+  ],
+  [
+    {sql => qq|hello [% hello.there %]/[% hello.you %]|},
+    qq|hello silly/rabbit|
+  ],
+  [
+    {sql => qq|hello [% hello.there %]/[% hello.you %]|, prefix => 'why ', suffix => "\nhead."},
+    qq|why hello silly/rabbit\nhead.|,
+  ],
+  [
+    {sql => qq|[% MACRO pref(f) CALL query.prefer(f); pref('hello IS NULL') -%]\n[% pref('t'); query.preferences.join() %]|},
+    qq|hello IS NULL t|,
+  ],
+  [
+    {sql => qq|[% CALL query.transform('trim', 'fields', ['address']); GET query.transformations.queue.first.first %]|, transformations => $transformations},
+    qq|trim|,
+  ],
+  [
+    {sql => $cond_while},
+    qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
+    {account_numbers => [' D001 ', 'D002']}
+  ],
+  [
+    {sql => $cond_while},
+    qq|1   WHERE  account_number LIKE '%D002%' |,
+    {account_numbers => ['D00 2']}
+  ],
+  [
+    {sql => $cond_while},
+    qq|1 |,
+    {account_numbers => []}
+  ]
 );
 
 # isa + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
@@ -70,49 +71,49 @@ my $mod = 'DBIx::RoboQuery';
 eval "require $mod" or die $@;
 isa_ok($mod->new(sql => 'SQL'), $mod);
 
-	# one of sql or file but not both
-	throws_ok(sub { $mod->new(sql => 'SQL', file => '/dev/null') }, qr'both', 'not both');
-	throws_ok(sub { $mod->new() }, qr'one of', 'one');
+  # one of sql or file but not both
+  throws_ok(sub { $mod->new(sql => 'SQL', file => '/dev/null') }, qr'both', 'not both');
+  throws_ok(sub { $mod->new() }, qr'one of', 'one');
 
 #my $config = test_config;
 my $always = {hello => {there => 'silly', you => 'rabbit'}};
 
 foreach my $template ( @templates ){
-	my( $in, $out, $vars ) = @$template;
-	my $q = $mod->new({%$in, variables => $always});
-	is($q->sql($vars), $out, 'template');
+  my( $in, $out, $vars ) = @$template;
+  my $q = $mod->new({%$in, variables => $always});
+  is($q->sql($vars), $out, 'template');
 }
 
 {
-	# specifically test setting key_columns from template
-	my $q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %][% query.key_columns.join %]|);
-	is($q->sql, 'goo', 'key_columns set and printed');
-	is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
-	$q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %]|);
-	is($q->sql, '', 'nothing printed');
-	is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
+  # specifically test setting key_columns from template
+  my $q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %][% query.key_columns.join %]|);
+  is($q->sql, 'goo', 'key_columns set and printed');
+  is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
+  $q = $mod->new(sql => qq|[% query.key_columns = ['goo'] %]|);
+  is($q->sql, '', 'nothing printed');
+  is_deeply($q->{key_columns}, [qw(goo)], 'key_columns attribute set from template');
 }
 
 {
-	# only process the template once
-	my $i = 10;
-	my $q = $mod->new(sql => qq|[% boo %]hi|, variables => {boo => sub { ++$i }});
-	is($q->sql, '11hi', 'sql');
-	is_deeply($i, 11, 'only process once');
-	is($q->sql, '11hi', 'sql');
-	is_deeply($i, 11, 'only process once');
-	# hack... remove the cache var to show what would happen w/o
-	delete $q->{processed_sql};
-	is($q->sql, '12hi', 'sql');
-	is_deeply($i, 12, 'process again after deleting the cache');
-	is($q->sql, '12hi', 'sql');
-	is_deeply($i, 12, 'only process once');
+  # only process the template once
+  my $i = 10;
+  my $q = $mod->new(sql => qq|[% boo %]hi|, variables => {boo => sub { ++$i }});
+  is($q->sql, '11hi', 'sql');
+  is_deeply($i, 11, 'only process once');
+  is($q->sql, '11hi', 'sql');
+  is_deeply($i, 11, 'only process once');
+  # hack... remove the cache var to show what would happen w/o
+  delete $q->{processed_sql};
+  is($q->sql, '12hi', 'sql');
+  is_deeply($i, 12, 'process again after deleting the cache');
+  is($q->sql, '12hi', 'sql');
+  is_deeply($i, 12, 'only process once');
 
-	$q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|, transformations => $transformations);
-	is($q->sql, 'hi', 'sql');
-	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
-	is($q->sql, 'hi', 'sql');
-	is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
+  $q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|, transformations => $transformations);
+  is($q->sql, 'hi', 'sql');
+  is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
+  is($q->sql, 'hi', 'sql');
+  is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
 }
 
 isa_ok($mod->new(sql => "hi.")->resultset, 'DBIx::RoboQuery::ResultSet');
@@ -143,6 +144,6 @@ isa_ok($test_subq, $sub_query);
 isa_ok($test_subq->resultset, $sub_resultset);
 
 throws_ok(sub { $sub_query->new(sql => '', resultset_class => "$sub_resultset; print STDERR qw(oops);")->resultset; },
-	qr{TRoboQuery/ResultSet2printSTDERRqwoops.pm}, 'tainted module cannot be loaded');
+  qr{TRoboQuery/ResultSet2printSTDERRqwoops.pm}, 'tainted module cannot be loaded');
 
 done_testing;

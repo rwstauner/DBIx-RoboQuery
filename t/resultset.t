@@ -1,3 +1,4 @@
+# vim: set ts=2 sts=2 sw=2 expandtab smarttab:
 use strict;
 use warnings;
 use Test::More 0.96;
@@ -8,9 +9,9 @@ use THelper;
 my $qmod = 'DBIx::RoboQuery';
 
 my $transformations = {
-	trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s; },
-	squeeze => sub { (my $s = $_[0]) =~ s/\s+/ /g; $s; },
-	uc => sub { uc $_[0] }
+  trim => sub { (my $s = $_[0]) =~ s/(^\s+|\s+$)//g; $s; },
+  squeeze => sub { (my $s = $_[0]) =~ s/\s+/ /g; $s; },
+  uc => sub { uc $_[0] }
 };
 
 eval "require $qmod" or die $@;
@@ -28,18 +29,18 @@ my $mock_dbh = Test::MockObject->new();
 $mock_dbh->mock('prepare', sub { $mock_sth });
 
 my $opts = {
-	dbh => $mock_dbh,
-	key_columns => 'foo',
-	drop_columns => 'boo'
+  dbh => $mock_dbh,
+  key_columns => 'foo',
+  drop_columns => 'boo'
 };
 
 my $r = $rmod->new($query, $opts);
 isa_ok($r, $rmod);
 
 foreach my $colattr ( qw(key_columns drop_columns) ){
-	isa_ok($r->{$colattr}, 'ARRAY', "$colattr column attribute array ref");
-	is_deeply($r->{$colattr}, [$opts->{$colattr} || ()], "$colattr column attribute value");
-	is_deeply([$r->$colattr], [$opts->{$colattr} || ()], "$colattr method is a list");
+  isa_ok($r->{$colattr}, 'ARRAY', "$colattr column attribute array ref");
+  is_deeply($r->{$colattr}, [$opts->{$colattr} || ()], "$colattr column attribute value");
+  is_deeply([$r->$colattr], [$opts->{$colattr} || ()], "$colattr method is a list");
 }
 is_deeply([$r->key_columns], [$opts->{key_columns}], 'key_columns is a list');
 
@@ -66,37 +67,37 @@ isa_ok($r, $rmod);
 $mock_sth->{NAME_lc} = [qw(foo lou goo ber boo)];
 
 my %data = (
-	foo1lou1a => {foo => 'foo1', lou => 'lou1', goo => 'goo1', ber => 'ber1', boo => 'boo1'},
-	foo2lou2  => {foo => 'foo2', lou => 'lou2', goo => 'goo2', ber => 'ber2', boo => 'boo2'},
-	foo1lou2  => {foo => 'foo1', lou => 'lou2', goo => 'goo3', ber => 'ber3', boo => 'boo3'},
-	foo2lou1  => {foo => 'foo2', lou => 'lou1', goo => 'goo4', ber => 'ber4', boo => 'boo4'},
-	foo1lou1b => {foo => 'foo1', lou => 'lou1', goo => 'goo5', ber => 'ber5', boo => 'boo5'},
-	foo1lou1c => {foo => 'foo1', lou => 'lou1', goo => 'goo6', ber => 'ber6', boo => 'boo6'},
+  foo1lou1a => {foo => 'foo1', lou => 'lou1', goo => 'goo1', ber => 'ber1', boo => 'boo1'},
+  foo2lou2  => {foo => 'foo2', lou => 'lou2', goo => 'goo2', ber => 'ber2', boo => 'boo2'},
+  foo1lou2  => {foo => 'foo1', lou => 'lou2', goo => 'goo3', ber => 'ber3', boo => 'boo3'},
+  foo2lou1  => {foo => 'foo2', lou => 'lou1', goo => 'goo4', ber => 'ber4', boo => 'boo4'},
+  foo1lou1b => {foo => 'foo1', lou => 'lou1', goo => 'goo5', ber => 'ber5', boo => 'boo5'},
+  foo1lou1c => {foo => 'foo1', lou => 'lou1', goo => 'goo6', ber => 'ber6', boo => 'boo6'},
 );
 my @data = @data{qw(foo1lou1a foo2lou2 foo1lou2 foo2lou1 foo1lou1b foo1lou1c)};
 
 sub after_drop { my %r = %{$_[0]}; my @d = $opts->{drop_columns}; @d = @{$d[0]} if ref $d[0]; delete @r{ @d }; \%r; }
 
 my $exp = {
-	foo1 => {
-		lou2 => after_drop($data{foo1lou2})
-	},
-	foo2 => {
-		lou2 => after_drop($data{foo2lou2}),
-		lou1 => after_drop($data{foo2lou1}),
-	}
+  foo1 => {
+    lou2 => after_drop($data{foo1lou2})
+  },
+  foo2 => {
+    lou2 => after_drop($data{foo2lou2}),
+    lou1 => after_drop($data{foo2lou1}),
+  }
 };
 
 my $reversed = 0;
 sub fetchall {
-	my ($root, $sth, $keys) = ({}, @_);
-	for my $row ( ordered_data() ){
-		my $h = $root;
-		$h = ($h->{ $row->{$_} } ||= {}) for @$keys;
-		@$h{keys %$row} = values %$row;
-		delete @$h{ $opts->{drop_columns} };
-	}
-	$root;
+  my ($root, $sth, $keys) = ({}, @_);
+  for my $row ( ordered_data() ){
+    my $h = $root;
+    $h = ($h->{ $row->{$_} } ||= {}) for @$keys;
+    @$h{keys %$row} = values %$row;
+    delete @$h{ $opts->{drop_columns} };
+  }
+  $root;
 };
 sub ordered_data { $reversed ? reverse @data : @data }
 sub set_data { $reversed = $_[0]; $mock_sth->set_series('fetchrow_hashref', ordered_data); }
@@ -129,25 +130,25 @@ is_deeply($r->hash, $exp, 'hash returned expected w/    preference');
 # check columns
 
 my @column_tests = (
-	[ [qw(foo lou)], [qw(goo ber boo)],     [] ],
-	[ [qw(foo lou)], [qw(goo ber)],         [qw(boo)] ],
-	[ [qw(foo)],     [qw(lou goo ber)],     [qw(boo)] ],
-	[ [qw(foo)],     [qw(lou goo ber boo)], [] ],
-	[ [],            [qw(foo lou goo ber boo)], [] ],
-	[ [],            [],                    [qw(foo lou goo ber boo)] ],
+  [ [qw(foo lou)], [qw(goo ber boo)],     [] ],
+  [ [qw(foo lou)], [qw(goo ber)],         [qw(boo)] ],
+  [ [qw(foo)],     [qw(lou goo ber)],     [qw(boo)] ],
+  [ [qw(foo)],     [qw(lou goo ber boo)], [] ],
+  [ [],            [qw(foo lou goo ber boo)], [] ],
+  [ [],            [],                    [qw(foo lou goo ber boo)] ],
 );
 
 foreach my $test ( @column_tests ){
-	$opts->{key_columns}  = $$test[0];
-	my $all_columns       = [map { @$_ } @$test[0,1]];
-	$opts->{drop_columns} = $$test[2];
-	$mock_sth->{NAME_lc}  = [map { @$_ } @$test];
+  $opts->{key_columns}  = $$test[0];
+  my $all_columns       = [map { @$_ } @$test[0,1]];
+  $opts->{drop_columns} = $$test[2];
+  $mock_sth->{NAME_lc}  = [map { @$_ } @$test];
 
-	$r = $rmod->new($query, $opts);
-	$r->execute();
-	is_deeply([$r->key_columns],  $$test[0],    'key  columns');
-	is_deeply([$r->columns],      $all_columns, '     columns');
-	is_deeply([$r->drop_columns], $$test[2],    'drop columns');
+  $r = $rmod->new($query, $opts);
+  $r->execute();
+  is_deeply([$r->key_columns],  $$test[0],    'key  columns');
+  is_deeply([$r->columns],      $all_columns, '     columns');
+  is_deeply([$r->drop_columns], $$test[2],    'drop columns');
 }
 
 $opts->{key_columns} = [];
@@ -157,58 +158,58 @@ $r = $rmod->new($query, $opts);
 throws_ok(sub { $r->hash }, qr/key_columns/, 'key_columns required for hash()');
 
 SKIP: {
-	# To test that the slice we're supplying to fetchall_arrayref is correct
-	# we need to use the *real* DBI fetchall_arrayref, so try to use DBD::Mock
-	eval "require DBI; require DBD::Mock";
-	# save the error if there was one
-	my $e = $@;
+  # To test that the slice we're supplying to fetchall_arrayref is correct
+  # we need to use the *real* DBI fetchall_arrayref, so try to use DBD::Mock
+  eval "require DBI; require DBD::Mock";
+  # save the error if there was one
+  my $e = $@;
 
-	# figure out how many tests we're running or skipping
-	my @drop_tests = (
-		[],
-		[qw(boo)],
-		[qw(goo ber)],
-	);
+  # figure out how many tests we're running or skipping
+  my @drop_tests = (
+    [],
+    [qw(boo)],
+    [qw(goo ber)],
+  );
 
-	skip('DBD::Mock not installed, skipping array() tests', scalar @drop_tests) if $e;
+  skip('DBD::Mock not installed, skipping array() tests', scalar @drop_tests) if $e;
 
-	$opts->{dbh} = my $dbdmock = DBI->connect('dbi:Mock:', qw(u p));
+  $opts->{dbh} = my $dbdmock = DBI->connect('dbi:Mock:', qw(u p));
 
-	my @datakeys = keys %{$data[0]};
-	foreach my $test ( @drop_tests ){
-		$opts->{drop_columns} = $test;
-		my @nondrop = do { my %drop = map { $_ => 1 } @$test; grep { !$drop{$_} } @datakeys; };
-		foreach my $fetch (
-			['hash',  {}, [map {  after_drop($_) } @data]],
-			['array', [], [map { [@$_{@nondrop}] } @data]]
-		){
-			my ($type, $slice, $rows) = @$fetch;
-			# Doing this doesn't tell me anything: [\@datakeys, map { [@{after_drop($_)}{ @datakeys }] } @data].
-			# Rely on DBI's method to tell me if the slice specification is accurate.
-			$dbdmock->{mock_add_resultset} = [\@datakeys, map { [@{$_}{ @datakeys }] } @data];
-			$r = $rmod->new($query, $opts);
-			is_deeply($r->array($slice), $rows, "array() returned expected $type slices");
-		}
-	}
+  my @datakeys = keys %{$data[0]};
+  foreach my $test ( @drop_tests ){
+    $opts->{drop_columns} = $test;
+    my @nondrop = do { my %drop = map { $_ => 1 } @$test; grep { !$drop{$_} } @datakeys; };
+    foreach my $fetch (
+      ['hash',  {}, [map {  after_drop($_) } @data]],
+      ['array', [], [map { [@$_{@nondrop}] } @data]]
+    ){
+      my ($type, $slice, $rows) = @$fetch;
+      # Doing this doesn't tell me anything: [\@datakeys, map { [@{after_drop($_)}{ @datakeys }] } @data].
+      # Rely on DBI's method to tell me if the slice specification is accurate.
+      $dbdmock->{mock_add_resultset} = [\@datakeys, map { [@{$_}{ @datakeys }] } @data];
+      $r = $rmod->new($query, $opts);
+      is_deeply($r->array($slice), $rows, "array() returned expected $type slices");
+    }
+  }
 }
 
 # test transform
 
 my @trdata = (
-	{id => 'a1', hello => ' hello  there ', name => ' ucased '},
-	{id => 'B1', hello => ' hello  again ', name => ' u  cased '},
-	{id => 'b1', hello => ' hello  three ', name => ' u  case d '},
+  {id => 'a1', hello => ' hello  there ', name => ' ucased '},
+  {id => 'B1', hello => ' hello  again ', name => ' u  cased '},
+  {id => 'b1', hello => ' hello  three ', name => ' u  case d '},
 );
 
 my $trdatarows = [
-	{id => 'A1', hello => 'hello there', name => 'UCASED'},
-	{id => 'B1', hello => 'hello again', name => 'U CASED'},
-	{id => 'B1', hello => 'hello three', name => 'U CASE D'},
+  {id => 'A1', hello => 'hello there', name => 'UCASED'},
+  {id => 'B1', hello => 'hello again', name => 'U CASED'},
+  {id => 'B1', hello => 'hello three', name => 'U CASE D'},
 ];
 
 my $trdatatree = {
-	A1 => $trdatarows->[0],
-	B1 => $trdatarows->[2],
+  A1 => $trdatarows->[0],
+  B1 => $trdatarows->[2],
 };
 
 my $arraysfromhashes = sub { [map { [@$_{qw(id hello name)}] } @_] };
