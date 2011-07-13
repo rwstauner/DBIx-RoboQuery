@@ -1,8 +1,8 @@
-package DBIx::RoboQuery;
-# ABSTRACT: Very configurable/programmable query object
-
 use strict;
 use warnings;
+
+package DBIx::RoboQuery;
+# ABSTRACT: Very configurable/programmable query object
 
 use Carp qw(carp croak);
 use DBIx::RoboQuery::ResultSet ();

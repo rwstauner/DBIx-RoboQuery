@@ -1,8 +1,8 @@
-package DBIx::RoboQuery::Util;
-# ABSTRACT: Utility functions for DBIx::RoboQuery
-
 use strict;
 use warnings;
+
+package DBIx::RoboQuery::Util;
+# ABSTRACT: Utility functions for DBIx::RoboQuery
 
 # convenience function used in both modules
 # to convert specific hash items to arrayrefs
@@ -91,6 +91,7 @@ sub order_from_sql {
 		\s*;?\s*\Z                   # end of SQL
 	/isx
 		# ignore direction
+    ## no critic ProhibitMutatingListFunctions
 		? map { s/\s+(ASC|DESC)$//; $_ } split(/\s*,\s*/, $1)
 		: ();
 }

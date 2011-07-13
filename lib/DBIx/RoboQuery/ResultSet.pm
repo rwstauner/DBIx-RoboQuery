@@ -1,8 +1,9 @@
+use strict;
+use warnings;
+
 package DBIx::RoboQuery::ResultSet;
 # ABSTRACT: Configure the results to get what you want
 
-use strict;
-use warnings;
 use Carp qw(croak carp);
 
 =method new
