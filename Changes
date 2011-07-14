@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.013     2011-07-14T23:20:50Z
+
   - Superficial dist/release changes
   - Add ideas to Pod TODO lists
 
