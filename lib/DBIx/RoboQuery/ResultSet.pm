@@ -206,13 +206,14 @@ sub execute {
   my $sql = $self->{sql};
 
   # TODO: Time the query
-  $self->{sth}      = $self->{dbh}->prepare($sql)
+  my $sth = $self->{sth} = $self->{dbh}->prepare($sql)
     or croak $self->{dbh}->errstr;
-  $self->{executed} = $self->{sth}->execute(@params)
-    or croak $self->{sth}->errstr;
+
+  $self->{executed} = $sth->execute(@params)
+    or croak $sth->errstr;
   # TODO: stop timer
 
-  if( my $columns = $self->{sth}->{ $self->{hash_key_name} } ){
+  if( my $columns = $sth->{ $self->{hash_key_name} } ){
     # save the full order for later (but break the reference)
     $self->{all_columns} = [@$columns];
     # get the "other" columns (not keys, not dropped)
@@ -235,7 +236,7 @@ sub execute {
     }
   }
 
-  # FIXME: check $self->{sth}->errstr (or someting: see DBI)
+  # FIXME: check $sth->errstr (or someting: see DBI)
   # to make sure we got all records without error
 
   return $self->{executed};
