@@ -209,6 +209,12 @@ sub execute {
   my $sth = $self->{sth} = $self->{dbh}->prepare($sql)
     or croak $self->{dbh}->errstr;
 
+  # call bind_param() regardless of @params b/c bind_param can specify a type
+  if( my $bind = $self->{bind_params} ){
+    local $_;
+    $sth->bind_param(@$_) for @$bind;
+  }
+
   $self->{executed} = $sth->execute(@params)
     or croak $sth->errstr;
   # TODO: stop timer
