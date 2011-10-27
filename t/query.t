@@ -61,7 +61,19 @@ my @templates = (
     {sql => $cond_while},
     qq|1 |,
     {account_numbers => []}
-  ]
+  ],
+  [
+    {sql => 'WHERE field = [% query.bind("hey") %]'},
+    qq|WHERE field = ?|,
+  ],
+  [
+    {sql => 'WHERE field = [% query.bind(":duck", "goose", {}) %]'},
+    qq|WHERE field = :duck|,
+  ],
+  [
+    {sql => 'WHERE field = $1 [% CALL query.bind("hey") %]'},
+    qq|WHERE field = \$1 |,
+  ],
 );
 
 # isa + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
