@@ -54,7 +54,7 @@ A hashref of variables made available to the template
 
 sub new {
   my $class = shift;
-  my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
+  my %opts = @_ == 1 ? %{ $_[0] } : @_;
 
   # Params::Validate not currently warranted
   # (since it's still missing the "mutually exclusive" feature)
