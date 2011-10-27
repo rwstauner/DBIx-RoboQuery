@@ -610,5 +610,5 @@ where you are the source of the query templates.
 * Allow for other templating engines (or none at all)
 * Consider an option for including direction (C<ASC>/C<DESC>) in L</order>
 * Write a lot more tests
-* Add a method to pass bind parameters (which will pass to C<< $sth->execute >>)
+* Allow binding an arrayref and returning '?,?,?'
 * Accept transformations or callbacks that operate on the whole row?
