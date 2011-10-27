@@ -39,6 +39,11 @@ An arrayref of column names to specify the sort order;  See L</order>.
 A string to be prepended to the SQL before parsing the template
 * C<suffix>
 A string to be appended  to the SQL before parsing the template
+* C<template_options>
+A hashref of options that will be merged into the options to L<Template/new>.
+You can use this to overwrite the default options, but be sure to use the
+C<variables> options rather than including C<VARIABLES> in this hash
+unless you don't want the default variables to be available to the template.
 * C<transformations>
 An instance of L<Sub::Chain::Group>
 (or a hashref (See L</prepare_transformations>.))
@@ -89,14 +94,15 @@ sub new {
 
   $self->prepare_transformations();
 
-  $self->{tt} = Template->new(
+  $self->{tt} ||= Template->new({
     ABSOLUTE => 1,
     STRICT => 1,
     VARIABLES => {
       query => $self,
       %{$self->{variables}}
-    }
-  )
+    },
+    %{ $self->{template_options} || {} },
+  })
     or die "$class error: Template::Toolkit failed: $Template::ERROR\n";
 
   return $self;
@@ -295,6 +301,7 @@ sub _pass_through_args {
     prefix
     resultset_class
     suffix
+    template_options
     transformations
     variables
   ));
