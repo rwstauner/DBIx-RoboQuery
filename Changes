@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.015     2011-10-27T17:20:18Z
+
   - Merge 'template_options' hashref into args to Template->new
 
 0.014     2011-10-27T00:21:05Z
