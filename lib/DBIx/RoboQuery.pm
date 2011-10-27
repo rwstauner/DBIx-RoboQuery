@@ -40,7 +40,8 @@ A string to be prepended to the SQL before parsing the template
 * C<suffix>
 A string to be appended  to the SQL before parsing the template
 * C<template_options>
-A hashref of options that will be merged into the options to L<Template/new>.
+A hashref of options that will be merged into the options to
+L<< Template->new()|Template >>
 You can use this to overwrite the default options, but be sure to use the
 C<variables> options rather than including C<VARIABLES> in this hash
 unless you don't want the default variables to be available to the template.
