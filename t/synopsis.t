@@ -15,7 +15,7 @@ foreach my $req ( 'DBI', "DBD::$dbd", $pod_parser ){
 }
 
 # all the tests are in the heredoc:
-plan tests => 11;
+plan tests => 12;
 
 # test everything in DBIx::RoboQuery/SYNOPSIS
 my $tests = <<'TESTS';
@@ -31,7 +31,8 @@ isa_ok($query->{transformations}, 'Sub::Chain::Group');
   is_deeply([$query->{$_}], [$resultset->{$_}], "query and resultset have same $_")
     for qw(preferences transformations);
 
-like($query->sql, qr[^\s*SELECT user_id,.+FROM users\s+WHERE dob < '2000-01-01'\s*$]s, 'expected SQL');
+like($query->sql, qr[^\s*SELECT user_id,.+FROM users\s+WHERE dob < \?\s*$]s, 'expected SQL');
+is_deeply($resultset->{bind_params}, [[1, '2000-01-01']], 'bind values');
 is_deeply(\@non_key, [qw(name birthday)], 'non_key columns');
 is_deeply($records, expected_records, 'expected records');
 TESTS

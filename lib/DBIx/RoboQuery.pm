@@ -521,7 +521,7 @@ my $dbh; # NOTE: This SYNOPSIS is read in and tested in t/synopsis.t
       dob as birthday,
       favorite_smell
     FROM users
-    WHERE dob < '[% minimum_birthdate() %]'
+    WHERE dob < [% query.bind(minimum_birthdate()) %]
   SQL
 
   # create query object from template
