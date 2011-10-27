@@ -145,7 +145,7 @@ For example, with L<Template::Toolkit>:
   [% CALL query.bind(value) %]
 
 For convenience the placeholder (C<$p_num>) will be filled in automatically
-(a simple incrementer starting at 1)
+(a simple incrementing integer starting at 1)
 unless you provide all three arguments
 (in which case they are passed as-is to L<DBI/bind_param>).
 
