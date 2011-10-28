@@ -517,7 +517,7 @@ my $dbh; # NOTE: This SYNOPSIS is read in and tested in t/synopsis.t
 
 =head1 SYNOPSIS
 
-  my $template_string = <<'  SQL';
+  my $template_string = <<SQL;
   [%
     CALL query.key_columns('user_id');
     CALL query.drop_columns('favorite_smell');

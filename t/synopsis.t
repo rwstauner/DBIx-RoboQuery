@@ -92,5 +92,6 @@ sub get_synopsis_pod {
       $pod .= $para->{content};
     }
   }
+  $pod =~ s/^  //mg;
   return $pod;
 }
