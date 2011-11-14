@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+  - Rewrite t/synopsis.t to work without Pod::Eventual::Simple
+
 0.016     2011-10-28T03:27:23Z
 
   - Fix heredoc in Synopis POD (and fix synopsis tests)
