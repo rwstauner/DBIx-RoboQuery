@@ -6,6 +6,12 @@ use Test::MockObject 1.09;
 use lib 't/lib';
 use THelper;
 
+my $timer = Test::MockObject->new
+  ->mock(stop    => sub { ++$_[0]->{time} })
+  ->mock(restart => sub {   $_[0]->{time} })
+;
+$timer->fake_new('Timer::Simple');
+
 my $qmod = 'DBIx::RoboQuery';
 
 my $transformations = {
@@ -221,21 +227,25 @@ $query->transform('uc',   fields => [qw(id name)]);
 # reset dbh, sth
 $mock_sth->{NAME_lc} = [qw(id hello name)];
 @$opts{qw(key_columns dbh)} = ('id', $mock_dbh);
+$timer->{time} = 1;
 
 # array of arrayrefs
 $mock_sth->set_series('fetchall_arrayref', $arraysfromhashes->(@trdata));
 $r = $rmod->new($query, $opts);
 is_deeply($r->array([]), $arraysfromhashes->(@$trdatarows), 'array returns transformed data');
+test_times($r, 9); # 2 + 3 + 4
 
 # array of hashrefs
 $mock_sth->set_series('fetchall_arrayref', [@trdata]);
 $r = $rmod->new($query, $opts);
 is_deeply($r->array, $trdatarows, 'array returns transformed data');
+test_times($r, 18); # 5 + 6 + 7
 
 # hash of hashrefs
 $mock_sth->set_series('fetchrow_hashref', @trdata);
 $r = $rmod->new($query, $opts);
 is_deeply($r->hash,  $trdatatree, 'hash returns transformed data');
+test_times($r, 27); # 8 + 9 + 10
 
 # test transfer of attributes
 my @key = qw(bl argh);
@@ -247,3 +257,10 @@ $query = $qmod->new(sql => qq|[% query.key_columns = ['boo'] %]|);
 is_deeply($query->resultset->{key_columns}, ['boo'], 'key_columns set in template transferred from Q to R');
 
 done_testing;
+
+sub test_times {
+  my $t = shift->times;
+  is_deeply [sort keys %$t], [qw(execute fetch prepare total)], '4 times';
+  is $t->{total}, $t->{prepare} + $t->{execute} + $t->{fetch}, 'total of the other 3';
+  is $t->{total}, shift, 'total time';
+}

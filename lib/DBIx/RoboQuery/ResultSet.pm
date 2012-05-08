@@ -6,6 +6,7 @@ package DBIx::RoboQuery::ResultSet;
 # ABSTRACT: Configure the results to get what you want
 
 use Carp qw(croak carp);
+use Timer::Simple;
 
 =method new
 
@@ -44,6 +45,7 @@ sub new {
   my $query = shift;
   my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
   my $self = {
+    times         => {},
     query => $query,
     default_slice => {},
 
@@ -143,7 +145,11 @@ sub array {
       @tr_args = ( [@col[@$slice]] );
     }
   }
+
+  my $t = Timer::Simple->new;
   my $rows = $self->{sth}->fetchall_arrayref(@args);
+  $self->{times}{fetch} = $t->stop;
+
   # if @tr_args is empty, the hash will be the only argument sent
   return $self->{transformations}
     ? [map { $self->{transformations}->call(@tr_args, $_) } @$rows]
@@ -205,9 +211,10 @@ sub execute {
   # the sql attribute is cached from $query->sql in the constructor
   my $sql = $self->{sql};
 
-  # TODO: Time the query
+  my $t = Timer::Simple->new;
   my $sth = $self->{sth} = $self->{dbh}->prepare($sql)
     or croak $self->{dbh}->errstr;
+  $self->{times}{prepare} = $t->stop;
 
   # call bind_param() regardless of @params b/c bind_param can specify a type
   if( my $bind = $self->{bind_params} ){
@@ -215,9 +222,10 @@ sub execute {
     $sth->bind_param(@$_) for @$bind;
   }
 
+  $t->restart;
   $self->{executed} = $sth->execute(@params)
     or croak $sth->errstr;
-  # TODO: stop timer
+  $self->{times}{execute} = $t->stop;
 
   if( my $columns = $sth->{ $self->{hash_key_name} } ){
     # save the full order for later (but break the reference)
@@ -310,6 +318,8 @@ sub hash {
     ? sub { my $r = $sth->fetchrow_hashref(); $r && $tr->call($r); }
     : sub {         $sth->fetchrow_hashref(); };
 
+  my $t = Timer::Simple->new;
+
   # check for preferences once... if there are none, do the quick version
   if( !$self->{preferences} || !@{$self->{preferences}} ){
     # we can't honor drop_columns with fetchall_hashref(), so fake it
@@ -336,6 +346,7 @@ sub hash {
       @$hash{@columns}  = @$row{@columns};
     }
   }
+  $self->{times}{fetch} = $t->stop;
   return $root;
 }
 
@@ -443,6 +454,28 @@ Returns the query object (in case you lost it).
 
 sub query {
   return $_[0]->{query};
+}
+
+=method times
+
+Returns a hashref of timing info
+(the length of time each operation took in fractional seconds).
+
+Keys include:
+
+=for :list
+* C<prepare> - Prepare the statement
+* C<execute> - Execute the statement
+* C<fetch> - Fetch (and transform) all the records
+* C<total> - Sum of all times
+
+=cut
+
+sub times {
+  my ($self) = @_;
+  my %times = %{ $self->{times} };
+  $times{total} = $times{prepare} + $times{execute} + $times{fetch};
+  return \%times;
 }
 
 # The DBI objects clean up after themselves, so DESTROY not currently warranted
