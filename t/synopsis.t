@@ -15,7 +15,7 @@ foreach my $req ( 'DBI', "DBD::$dbd" ){
 }
 
 # all the tests are in the heredoc:
-plan tests => 17;
+plan tests => 18;
 
 # test everything in DBIx::RoboQuery/SYNOPSIS
 my $tests = <<'TESTS';
@@ -35,6 +35,7 @@ like($query->sql, qr[^\s*SELECT user_id,.+FROM users\s+WHERE dob < \?\s*$]s, 'ex
 is_deeply($resultset->{bind_params}, [[1, '2000-01-01']], 'bind values');
 is_deeply(\@non_key, [qw(name birthday)], 'non_key columns');
 is_deeply($records, expected_records, 'expected records');
+is $resultset->row_count, 2, 'counted 2 rows';
 
 my $times = $resultset->times;
 is $times->{total}, $times->{prepare} + $times->{execute} + $times->{fetch}, 'total';

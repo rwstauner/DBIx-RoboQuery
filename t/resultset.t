@@ -234,18 +234,21 @@ $mock_sth->set_series('fetchall_arrayref', $arraysfromhashes->(@trdata));
 $r = $rmod->new($query, $opts);
 is_deeply($r->array([]), $arraysfromhashes->(@$trdatarows), 'array returns transformed data');
 test_times($r, 9); # 2 + 3 + 4
+is $r->row_count, scalar(@trdata), 'row_count';
 
 # array of hashrefs
 $mock_sth->set_series('fetchall_arrayref', [@trdata]);
 $r = $rmod->new($query, $opts);
 is_deeply($r->array, $trdatarows, 'array returns transformed data');
 test_times($r, 18); # 5 + 6 + 7
+is $r->row_count, scalar(@trdata), 'row_count';
 
 # hash of hashrefs
 $mock_sth->set_series('fetchrow_hashref', @trdata);
 $r = $rmod->new($query, $opts);
 is_deeply($r->hash,  $trdatatree, 'hash returns transformed data');
 test_times($r, 27); # 8 + 9 + 10
+is $r->row_count, 2, 'row_count (only 2 for hash tree)';
 
 # test transfer of attributes
 my @key = qw(bl argh);

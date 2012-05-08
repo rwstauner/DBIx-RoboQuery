@@ -45,6 +45,7 @@ sub new {
   my $query = shift;
   my %opts = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
   my $self = {
+    row_count     => -1,
     times         => {},
     query => $query,
     default_slice => {},
@@ -149,6 +150,7 @@ sub array {
   my $t = Timer::Simple->new;
   my $rows = $self->{sth}->fetchall_arrayref(@args);
   $self->{times}{fetch} = $t->stop;
+  $self->{row_count} = @$rows;
 
   # if @tr_args is empty, the hash will be the only argument sent
   return $self->{transformations}
@@ -318,6 +320,8 @@ sub hash {
     ? sub { my $r = $sth->fetchrow_hashref(); $r && $tr->call($r); }
     : sub {         $sth->fetchrow_hashref(); };
 
+  # we only increase the row count for new (not overridden) hashes
+  my $count = 0;
   my $t = Timer::Simple->new;
 
   # check for preferences once... if there are none, do the quick version
@@ -326,6 +330,7 @@ sub hash {
     while( my $row = $fetchrow->() ){
       my $hash = $root;
       $hash = ($hash->{ $row->{$_} } ||= {}) for @key_columns;
+      ++$count unless keys %$hash;
       @$hash{@columns}  = @$row{@columns};
     }
   }
@@ -342,11 +347,15 @@ sub hash {
       if( keys %$hash ){
         $row = $self->preference({%$drop, %$hash}, $row);
       }
+      else {
+        ++$count;
+      }
       @$drop{@drop_columns} = @$row{@drop_columns};
       @$hash{@columns}  = @$row{@columns};
     }
   }
   $self->{times}{fetch} = $t->stop;
+  $self->{row_count} = $count;
   return $root;
 }
 
@@ -454,6 +463,22 @@ Returns the query object (in case you lost it).
 
 sub query {
   return $_[0]->{query};
+}
+
+=method row_count
+
+Returns the number of rows returned via L</array> or L</hash>.
+It will return C<-1> until after one of those methods have been called.
+
+For L</array> this is the same as C<< scalar @$rows >>.
+
+For L</hash> it is the number of (non-duplicate) rows
+(which would be harder to count manually from the hash tree).
+
+=cut
+
+sub row_count {
+  return $_[0]->{row_count};
 }
 
 =method times
