@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.018     2012-05-13T05:17:22Z
+
   - Include transformations in 'fetch' time for array()
     for consistency with hash() (and documentation (and future changes)).
 
