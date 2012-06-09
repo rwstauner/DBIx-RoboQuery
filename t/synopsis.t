@@ -32,7 +32,7 @@ isa_ok($query->{transformations}, 'Sub::Chain::Group');
     for qw(preferences transformations);
 
 like($query->sql, qr[^\s*SELECT user_id,.+FROM users\s+WHERE dob < \?\s*$]s, 'expected SQL');
-is_deeply($resultset->{bind_params}, [[1, '2000-01-01']], 'bind values');
+is_deeply([$resultset->bound_params], [[1, '2000-01-01']], 'bind values');
 is_deeply(\@non_key, [qw(name birthday)], 'non_key columns');
 is_deeply($records, expected_records, 'expected records');
 is $resultset->row_count, 2, 'counted 2 rows';
