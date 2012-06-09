@@ -508,7 +508,6 @@ before instantiating any resultset objects.
 
 sub sql {
   my ($self, $vars) = @_;
-  $vars ||= {};
   my $output;
 
   # Cache the result to avoid duplicating function calls,
@@ -518,6 +517,7 @@ sub sql {
     $output = $self->{processed_sql};
   }
   else {
+    $vars ||= {};
     my $sql = $self->pre_process_sql($self->{template});
     $self->{tt}->process(\$sql, $vars, \$output)
       or die($self->{tt}->error(), "\n");
