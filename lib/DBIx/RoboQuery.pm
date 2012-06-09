@@ -661,3 +661,5 @@ where you are the source of the query templates.
 * Write a lot more tests
 * Allow binding an arrayref and returning '?,?,?'
 * Accept transformations or callbacks that operate on the whole row?
+* Accept bind variables in the constructor?
+* Add support for L<DBIx::Connector>?
