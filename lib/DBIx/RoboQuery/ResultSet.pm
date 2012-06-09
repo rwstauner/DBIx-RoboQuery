@@ -167,6 +167,19 @@ sub _arrayref_args {
   return $self->{query}->_arrayref_args;
 }
 
+=method bound_params
+
+See L<DBIx::RoboQuery/bound_params>.
+
+=method bound_values
+
+See L<DBIx::RoboQuery/bound_values>.
+
+=cut
+
+sub bound_params { $_[0]->query->bound_params }
+sub bound_values { $_[0]->query->bound_values }
+
 =method columns
 
   my @columns = $resultset->columns;

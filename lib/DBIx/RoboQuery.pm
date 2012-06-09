@@ -185,11 +185,52 @@ sub bind {
     unless @bind == 3;
 
   # always push (don't set $bound->[$index]) because we're just going
-  # to pass all of these bind_param() in order
+  # to pass all of these to bind_param() in order
   push @$bound, \@bind;
 
   # convenience for putting directly into place in sql
   return $bind[0] =~ /^\d+$/ ? '?' : $bind[0];
+}
+
+=method bound_params
+
+  my @bound = $query->bound_params;
+  # returns ( [ 1, "foo" ], [ 2, "bar", { TYPE => SQL_VARCHAR } ] )
+
+Returns a list of arrayrefs representing parameters bound to the query.
+Each arrayref is structured to be flattened and passed to L<DBI/bind_param>.
+Each will contain it's index (or placeholder), value,
+and possibly a hashref or value to hint at the data-type.
+
+=cut
+
+sub bound_params {
+  return @{ $_[0]->{bind_params} || [] };
+}
+
+=method bound_values
+
+This is a wrapper around L</bound_params>
+that returns only the values:
+
+  my @bound = $query->bound_values;
+  # returns ("foo", "bar")
+
+B<Note>: Values are returned in the order they were bound.
+If L</bind> is used in any way other than the default auto-increment manner
+the order (or even the number) of the values may be confusing and unhelpful.
+In that case you probably want to use L</bound_params>
+and get the values out manually.
+This behvior may be improved in the future and should not be relied upon.
+(Suggestions and patches for improved behavior are welcome.)
+The behavior of this method
+when L</bind> is used only in the default auto-increment manner
+will not change.
+
+=cut
+
+sub bound_values {
+  return map { $_->[1] } $_[0]->bound_params;
 }
 
 =method drop_columns
