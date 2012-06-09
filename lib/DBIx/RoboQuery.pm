@@ -221,7 +221,7 @@ If L</bind> is used in any way other than the default auto-increment manner
 the order (or even the number) of the values may be confusing and unhelpful.
 In that case you probably want to use L</bound_params>
 and get the values out manually.
-This behvior may be improved in the future and should not be relied upon.
+This behavior may be improved in the future and should not be relied upon.
 (Suggestions and patches for improved behavior are welcome.)
 The behavior of this method
 when L</bind> is used only in the default auto-increment manner
