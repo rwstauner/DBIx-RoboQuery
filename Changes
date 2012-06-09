@@ -2,6 +2,11 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.019     2012-06-09T17:31:46Z
+
+  - Add bound_params() and bound_values() methods to both classes
+    for inspection.
+
 0.018     2012-05-13T05:17:22Z
 
   - Include transformations in 'fetch' time for array()
