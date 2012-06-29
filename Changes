@@ -2,6 +2,10 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.020     2012-06-29T23:05:40Z
+
+  - Ensure $resultset->columns() preserves SELECT order
+
 0.019     2012-06-09T17:31:46Z
 
   - Add bound_params() and bound_values() methods to both classes
