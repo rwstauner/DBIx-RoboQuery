@@ -141,6 +141,7 @@ sub array {
     elsif( ref($slice) eq 'ARRAY' and !@$slice ){
       my @col  = @{$self->{all_columns}};
       my %drop = map { $_ => 1 } @{ $self->{drop_columns} };
+      # turn [] into a list of (possibly non-contiguous) indexes: [1,2,4,5]
       push(@$slice, grep { !$drop{ $col[$_] } } 0 .. $#col);
       # set the first (only) element to an arrayref of column names
       @tr_args = ( [@col[@$slice]] );
@@ -198,7 +199,7 @@ sub columns {
   my ($self) = @_;
   croak('Columns not known until after the statement has executed')
     unless $self->{executed};
-  return map { @{$self->{$_}} } qw(key_columns non_key_columns);
+  return @{ $self->{columns} };
 }
 
 =method drop_columns
@@ -247,10 +248,18 @@ sub execute {
   if( my $columns = $sth->{ $self->{hash_key_name} } ){
     # save the full order for later (but break the reference)
     $self->{all_columns} = [@$columns];
-    # get the "other" columns (not keys, not dropped)
-    my %other = map { $_ => 1 }
-      map { @{$self->{$_}} } qw(key_columns drop_columns);
-    $self->{non_key_columns} = [ grep { !$other{$_} } @$columns ];
+
+    # cache groups of column names
+    foreach my $set (
+      # preserve the order of non-dropped columns
+      [qw(         columns all_columns drop_columns )],
+      # make the list of non-key columns available separately
+      [qw( non_key_columns     columns  key_columns )],
+    ){
+      my ($make, $from, $minus) = @$set;
+      my %other = map { ($_ => 1) } @{ $self->{ $minus } };
+      $self->{ $make } = [ grep { !$other{$_} } @{ $self->{ $from } } ];
+    }
 
     if( my $transformations = $self->{transformations} ){
       foreach my $groups (
