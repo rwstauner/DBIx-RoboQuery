@@ -6,7 +6,7 @@ use DBIx::RoboQuery;
 
 # try to keep things a little organized... script near the top, helper subs at the bottom
 
-# don't make these prereqs for the distribution, but we need them for this author test
+# don't make these prereqs for the distribution, but we need them for this test
 my $dbd = 'SQLite';
 foreach my $req ( 'DBI', "DBD::$dbd" ){
   eval "require $req";
@@ -15,7 +15,7 @@ foreach my $req ( 'DBI', "DBD::$dbd" ){
 }
 
 # all the tests are in the heredoc:
-plan tests => 18;
+plan tests => 19;
 
 # test everything in DBIx::RoboQuery/SYNOPSIS
 my $tests = <<'TESTS';
@@ -31,11 +31,13 @@ isa_ok($query->{transformations}, 'Sub::Chain::Group');
   is_deeply([$query->{$_}], [$resultset->{$_}], "query and resultset have same $_")
     for qw(preferences transformations);
 
-like($query->sql, qr[^\s*SELECT user_id,.+FROM users\s+WHERE dob < \?\s*$]s, 'expected SQL');
+like($query->sql, qr[^\s*SELECT\s+name,\s+user_id,.+FROM users\s+WHERE dob < \?\s*$]s, 'expected SQL');
 is_deeply([$resultset->bound_params], [[1, '2000-01-01']], 'bind values');
 is_deeply(\@non_key, [qw(name birthday)], 'non_key columns');
 is_deeply($records, expected_records, 'expected records');
 is $resultset->row_count, 2, 'counted 2 rows';
+
+is_deeply([$resultset->columns],  [qw(name user_id birthday)], '(all) columns in SELECT order');
 
 my $times = $resultset->times;
 is $times->{total}, $times->{prepare} + $times->{execute} + $times->{fetch}, 'total';

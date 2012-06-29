@@ -565,8 +565,9 @@ my $dbh; # NOTE: This SYNOPSIS is read in and tested in t/synopsis.t
     CALL query.prefer('favorite_smell != "wet dog"');
     CALL query.transform('format_date', {fields => 'birthday'});
   %]
-    SELECT user_id,
+    SELECT
       name,
+      user_id,
       dob as birthday,
       favorite_smell
     FROM users
@@ -594,7 +595,7 @@ my $dbh; # NOTE: This SYNOPSIS is read in and tested in t/synopsis.t
 
   $resultset->execute;
   my @non_key = $resultset->non_key_columns;
-  # do something where i want to know the difference key and non-key columns
+  # do something where i want to know the difference between key and non-key columns
 
   # get records (with transformations applied and specified columns dropped)
   my $records = $resultset->hash;            # like DBI/fetchall_hashref

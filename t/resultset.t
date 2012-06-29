@@ -136,6 +136,7 @@ is_deeply($r->hash, $exp, 'hash returned expected w/    preference');
 # check columns
 
 my @column_tests = (
+  # key,           non-key,               drop
   [ [qw(foo lou)], [qw(goo ber boo)],     [] ],
   [ [qw(foo lou)], [qw(goo ber)],         [qw(boo)] ],
   [ [qw(foo)],     [qw(lou goo ber)],     [qw(boo)] ],
@@ -145,10 +146,12 @@ my @column_tests = (
 );
 
 foreach my $test ( @column_tests ){
+  # for $all_columns and NAME_lc we reverse the groups to put key_columns
+  # in the back to confirm that columns() preserves the order
   $opts->{key_columns}  = $$test[0];
-  my $all_columns       = [map { @$_ } @$test[0,1]];
+  my $all_columns       = [map { @$_ } @$test[1,0]];
   $opts->{drop_columns} = $$test[2];
-  $mock_sth->{NAME_lc}  = [map { @$_ } @$test];
+  $mock_sth->{NAME_lc}  = [map { @$_ } reverse @$test];
 
   $r = $rmod->new($query, $opts);
   $r->execute();
