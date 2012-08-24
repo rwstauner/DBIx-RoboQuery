@@ -37,6 +37,11 @@ An arrayref of [primary key] column names;  See L</key_columns>.
 An arrayref of column names to specify the sort order;  See L</order>.
 * C<prefix>
 A string to be prepended to the SQL before parsing the template
+* C<squeeze_blank_lines>
+Boolean; If enabled, empty lines (or lines with only whitespace)
+will be removed from the compiled template.
+This can make it easier to look at sql that has a lot of template directives.
+(Disabled by default.)
 * C<suffix>
 A string to be appended  to the SQL before parsing the template
 * C<template_options>
@@ -342,6 +347,7 @@ sub _pass_through_args {
     default_slice
     prefix
     resultset_class
+    squeeze_blank_lines
     suffix
     template_options
     transformations
@@ -521,6 +527,11 @@ sub sql {
     my $sql = $self->pre_process_sql($self->{template});
     $self->{tt}->process(\$sql, $vars, \$output)
       or die($self->{tt}->error(), "\n");
+
+    # this is fairly naive, but for SQL would usually be fine
+    $output =~ s/\n\s*\n+/\n/g
+      if $self->{squeeze_blank_lines};
+
     $self->{processed_sql} = $output;
   }
   return $output;

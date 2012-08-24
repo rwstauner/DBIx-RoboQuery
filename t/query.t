@@ -76,6 +76,32 @@ my @templates = (
   ],
 );
 
+{
+  # __FILE__ has unix line endings; give the template native OS line-endings
+  my $template = join($/, split /\n/, <<SQL) . $/;
+  WHERE
+    fld1 = 1
+
+    [% IF nu_uh %] 1 [% END %]
+
+    AND
+
+  fld2 = 2
+\x20\x20
+SQL
+
+  push(@templates,
+    [
+      {sql => $template},
+      qq|  WHERE\n    fld1 = 1\n\n    \n\n    AND\n\n  fld2 = 2\n  \n|,
+    ],
+    [
+      {sql => $template, squeeze_blank_lines => 1},
+      qq|  WHERE\n    fld1 = 1\n    AND\n  fld2 = 2\n|,
+    ],
+  );
+}
+
 # isa + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
 plan tests => 1 + 2 + @templates + 4 + 12 + 1 + 4 + 5;
 
@@ -88,7 +114,7 @@ isa_ok($mod->new(sql => 'SQL'), $mod);
   throws_ok(sub { $mod->new() }, qr'one of', 'one');
 
 #my $config = test_config;
-my $always = {hello => {there => 'silly', you => 'rabbit'}};
+my $always = {hello => {there => 'silly', you => 'rabbit'}, nu_uh => 0};
 
 foreach my $template ( @templates ){
   my( $in, $out, $vars ) = @$template;

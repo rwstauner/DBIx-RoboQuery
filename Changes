@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+  - Add 'squeeze_blank_lines' option
+
 0.020     2012-06-29T23:05:40Z
 
   - Ensure $resultset->columns() preserves SELECT order
