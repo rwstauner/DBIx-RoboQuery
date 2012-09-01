@@ -1,3 +1,5 @@
+=pod
+
 =encoding utf-8
 
 =for :stopwords Randy Stauner ACKNOWLEDGEMENTS dbh sql resultset TODO arrayrefs cpan
@@ -10,7 +12,7 @@ DBIx::RoboQuery - Very configurable/programmable query object
 
 =head1 VERSION
 
-version 0.020
+version 0.021
 
 =head1 SYNOPSIS
 
@@ -157,6 +159,15 @@ An arrayref of column names to specify the sort order;  See L</order>.
 C<prefix>
 
 A string to be prepended to the SQL before parsing the template
+
+=item *
+
+C<squeeze_blank_lines>
+
+Boolean; If enabled, empty lines (or lines with only whitespace)
+will be removed from the compiled template.
+This can make it easier to look at sql that has a lot of template directives.
+(Disabled by default.)
 
 =item *
 
@@ -446,6 +457,23 @@ Add a transformation to be applied to the result data.
 
 The default implementation simply passes the arguments
 to L<Sub::Chain::Group/append>.
+
+=head2 tr_fields
+
+Shortcut for calling L</transform> on fields.
+
+  $query->tr_fields("func", "fld1", "arg1", "arg2");
+
+Is equivalent to
+
+  $query->transform("func", fields => "fld1", args => ["arg1", "arg2"]);
+
+The second parameter (the fields) can be either a single string
+or an array ref.
+
+=head2 tr_groups
+
+Just like L</tr_fields> but the second parameter is for groups.
 
 =for Pod::Coverage result results
 
