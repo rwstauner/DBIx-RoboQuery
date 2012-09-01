@@ -15,8 +15,6 @@ foreach my $req ( 'DBI', "DBD::$dbd" ){
 }
 
 # all the tests are in the heredoc:
-plan tests => 19;
-
 # test everything in DBIx::RoboQuery/SYNOPSIS
 my $tests = <<'TESTS';
 is_deeply([$query->key_columns],  [qw(user_id)], 'key columns');

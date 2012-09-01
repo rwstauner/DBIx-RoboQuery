@@ -60,9 +60,9 @@ my @order = (
   # TODO: "SELECT * FROM table WHERE order_clause = 'ORDER BY something' ORDER BY order_clause"
 );
 
-plan tests => scalar @order;
-
 foreach my $order ( @order ){
   my ($sql, $columns, $opts) = @$order;
   is_deeply([order_from_sql($sql, $opts||{})], $columns, "sql column order guess: $sql");
 }
+
+done_testing;

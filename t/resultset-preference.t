@@ -90,8 +90,6 @@ my @tests = (
   ]
 );
 
-plan tests => scalar @tests * 3;
-
 my $r = DBIx::RoboQuery->new(sql => '')->resultset;
 foreach my $test ( @tests ){
   my $p = shift @$test;
@@ -108,3 +106,5 @@ foreach my $test ( @tests ){
   is_deeply($r2->{preferences}, $prefs, 'preferences ready');
   is_deeply($r2->preference(@$test), $$test[$p-1], "expected record $p");
 }
+
+done_testing;

@@ -102,9 +102,6 @@ SQL
   );
 }
 
-# isa + throws + templates + (key_columns) + (process once) + (isa R) + preferences + resultset_class
-plan tests => 1 + 2 + @templates + 4 + 12 + 1 + 4 + 5;
-
 my $mod = 'DBIx::RoboQuery';
 eval "require $mod" or die $@;
 isa_ok($mod->new(sql => 'SQL'), $mod);
