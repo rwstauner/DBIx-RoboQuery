@@ -48,6 +48,10 @@ my @templates = (
     qq|trim|,
   ],
   [
+    {sql => qq|[% CALL query.tr_fields('trim', 'address'); GET query.transformations.queue.first.first %]|, transformations => $transformations},
+    qq|trim|,
+  ],
+  [
     {sql => $cond_while},
     qq|1   WHERE  account_number LIKE '%D001%'   OR  account_number LIKE '%D002%' |,
     {account_numbers => [' D001 ', 'D002']}
@@ -144,11 +148,19 @@ foreach my $template ( @templates ){
   is($q->sql, '12hi', 'sql');
   is_deeply($i, 12, 'only process once');
 
-  $q = $mod->new(sql => qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|, transformations => $transformations);
+    foreach my $sql (
+      qq|[% CALL query.transform('trim', 'fields', 'help') %]hi|,
+      qq|[% CALL query.tr_fields('trim', 'help') %]hi|,
+      qq|[% CALL query.transform('trim', 'groups', 'helpful') %]hi|,
+      qq|[% CALL query.tr_groups('trim', 'helpful') %]hi|,
+    ){
+  $q = $mod->new(sql => $sql, transformations => $transformations);
+  $q->{transformations}->group(helpful => ['help']);
   is($q->sql, 'hi', 'sql');
   is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
   is($q->sql, 'hi', 'sql');
   is(scalar @{$q->{transformations}->{queue}}, 1, 'only process once');
+    }
 }
 
 isa_ok($mod->new(sql => "hi.")->resultset, 'DBIx::RoboQuery::ResultSet');

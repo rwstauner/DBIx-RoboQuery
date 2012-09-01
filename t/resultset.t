@@ -224,8 +224,8 @@ my $trdatatree = {
 my $arraysfromhashes = sub { [map { [@$_{qw(id hello name)}] } @_] };
 
 $query->transform('trim', groups => 'non_key');
-$query->transform('squeeze', groups => 'non_key');
-$query->transform('uc',   fields => [qw(id name)]);
+$query->tr_groups('squeeze', 'non_key');
+$query->tr_fields('uc',   [qw(id name)]);
 
 # reset dbh, sth
 $mock_sth->{NAME_lc} = [qw(id hello name)];

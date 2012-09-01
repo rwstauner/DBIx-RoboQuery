@@ -558,6 +558,41 @@ sub transform {
   $tr->append(@tr);
 }
 
+# shortcuts
+
+=method tr_fields
+
+Shortcut for calling L</transform> on fields.
+
+  $query->tr_fields("func", "fld1", "arg1", "arg2");
+
+Is equivalent to
+
+  $query->transform("func", fields => "fld1", args => ["arg1", "arg2"]);
+
+The second parameter (the fields) can be either a single string
+or an array ref.
+
+=method tr_groups
+
+Just like L</tr_fields> but the second parameter is for groups.
+
+=cut
+
+sub tr_fields {
+  my ($self, $name, $fields, @args) = @_;
+  return $self->transform($name, fields => $fields, args => [@args]);
+}
+
+sub tr_groups {
+  my ($self, $name, $groups, @args) = @_;
+  return $self->transform($name, groups => $groups, args => [@args]);
+}
+
+# TODO: tr_row?  could do it named func style,
+# but a template of '[% row.fld1 = 0 %]' seems more useful
+# (updating the hash should work, but if not this would: '[% _save_row(row) %]')
+
 1;
 
 =for stopwords TODO arrayrefs

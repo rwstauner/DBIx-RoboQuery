@@ -3,6 +3,7 @@ Revision history for DBIx::RoboQuery
 {{$NEXT}}
 
   - Add 'squeeze_blank_lines' option
+  - Add 'tr_fields()' and 'tr_groups()' as shortcuts for 'transform()'
 
 0.020     2012-06-29T23:05:40Z
 
