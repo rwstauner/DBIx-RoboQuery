@@ -451,6 +451,16 @@ sub prefer {
   push(@{ $self->{preferences} ||= [] }, @_);
 }
 
+sub _process_template {
+  my ($self, $template, $vars) = @_;
+  my $output = '';
+
+  $self->{tt}->process($template, $vars, \$output)
+    or die($self->{tt}->error(), "\n");
+
+  return $output;
+}
+
 =method resultset
 
   my $resultset = $query->resultset;
@@ -525,8 +535,7 @@ sub sql {
   else {
     $vars ||= {};
     my $sql = $self->pre_process_sql($self->{template});
-    $self->{tt}->process(\$sql, $vars, \$output)
-      or die($self->{tt}->error(), "\n");
+    $output = $self->_process_template(\$sql, $vars);
 
     # this is fairly naive, but for SQL would usually be fine
     $output =~ s/\n\s*\n+/\n/g

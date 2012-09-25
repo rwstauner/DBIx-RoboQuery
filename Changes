@@ -2,6 +2,14 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+  [Backward Incompatible Bugfix]
+  - Fixed internal template processing which previously ignored errors
+    processing 'preference' templates.
+    This was considered a bug as exceptions would silently cause preference
+    to essentially be ignored (and always choose the last record).
+    NOTE: this could cause errors to be thrown in the resultset stage
+    if the templates passed to "prefer()" don't compile.
+
 0.021     2012-09-01T17:49:59Z
 
   - Add 'squeeze_blank_lines' option
