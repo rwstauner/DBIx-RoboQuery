@@ -10,6 +10,10 @@ Revision history for DBIx::RoboQuery
     NOTE: this could cause errors to be thrown in the resultset stage
     if the templates passed to "prefer()" don't compile.
 
+  [Enhancements]
+  - Add 'template_private_vars' option
+    to control Template's handling of "private" variables.
+
 0.021     2012-09-01T17:49:59Z
 
   - Add 'squeeze_blank_lines' option

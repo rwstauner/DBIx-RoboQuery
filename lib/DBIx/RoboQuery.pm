@@ -16,7 +16,8 @@ use Template 2.22; # Template Toolkit
 
 Constructor;  Accepts a hash or hashref of options:
 
-=for :list
+=begin :list
+
 * C<sql>
 The SQL query [template] in a string;
 This can be a reference to a string in case your template [query]
@@ -50,11 +51,23 @@ L<< Template->new()|Template >>
 You can use this to overwrite the default options, but be sure to use the
 C<variables> options rather than including C<VARIABLES> in this hash
 unless you don't want the default variables to be available to the template.
+* C<template_private_vars>
+B<Not normally needed>
+
+This is a regexp (which defaults to C<$Template::Stash::PRIVATE>
+(which defaults to C<qr/^[_.]/>)).
+Any template variables that match will not be accessible in the template
+(but will return undef, which will throw an error under C<STRICT> mode).
+If you want to access "private" variables (including "private" hash keys)
+in your templates (the main query template or any templates passed to L</prefer>)
+you should set this to C<undef> to tell L<Template> not to check variable names.
 * C<transformations>
 An instance of L<Sub::Chain::Group>
 (or a hashref (See L</prepare_transformations>.))
 * C<variables>
 A hashref of variables made available to the template
+
+=end :list
 
 =cut
 
@@ -71,6 +84,7 @@ sub new {
     key_columns => [],
     resultset_class => "${class}::ResultSet",
     variables => {},
+    template_private_vars => $Template::Stash::PRIVATE,
   };
 
   bless $self, $class;
@@ -351,6 +365,7 @@ sub _pass_through_args {
     suffix
     template_options
     transformations
+    template_private_vars
     variables
   ));
 }
@@ -454,6 +469,9 @@ sub prefer {
 sub _process_template {
   my ($self, $template, $vars) = @_;
   my $output = '';
+
+  # this is a regexp for vars that are considered private (will appear undef in template)
+  local $Template::Stash::PRIVATE = $self->{template_private_vars};
 
   $self->{tt}->process($template, $vars, \$output)
     or die($self->{tt}->error(), "\n");
