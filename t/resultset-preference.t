@@ -11,7 +11,7 @@ my $pod_example =
   q|color == 'green'|,
   q|smell == 'good'|
 ];
-my $place = 
+my $place =
 [
   q|place == 'here'|,
   q|place == 'there' OR place == 'over there' OR place == 'back here'|
@@ -20,6 +20,10 @@ my $fruit = [
   q|name == 'orange'|,
   q|color == 'green'|,
   q|stem|
+];
+my $_private = [
+  q|_private == 1|,
+  q|_private == 2|,
 ];
 my @tests = (
   # [ winning record (starting from 1), ["rule", "rule"], {r => 1}, {r => 2} ]
@@ -87,24 +91,68 @@ my @tests = (
     {name => 'grape',  color => 'red',    stem => 0},
     {name => 'pear',   color => 'yellow', stem => 0},
     {name => 'banana', color => 'yellow', stem => 0}
-  ]
+  ],
+  [
+    2, $_private,
+    {_private => 3, allow_priv => 1},
+    {_private => 1, allow_priv => 1},
+    {_private => 2, allow_priv => 1},
+  ],
+  [
+    1, $_private,
+    {_private => 2, allow_priv => 1},
+    {_private => 3, allow_priv => 1},
+    {_private => 4, allow_priv => 1},
+  ],
+  # without deactivating private vars these will always pick the last
+  [
+    3, $_private,
+    {_private => 3},
+    {_private => 1},
+    {_private => 2},
+  ],
+  [
+    3, $_private,
+    {_private => 2},
+    {_private => 3},
+    {_private => 4},
+  ],
 );
 
-my $r = DBIx::RoboQuery->new(sql => '')->resultset;
 foreach my $test ( @tests ){
   my $p = shift @$test;
   my $prefs = shift @$test;
 
-  # white box hack
-  $r->{preferences} = $prefs;
-  is_deeply($r->preference(@$test), $$test[$p-1], "expected record $p");
+  my @args = (sql => '');
 
-  # api test
-  my $q = DBIx::RoboQuery->new(sql => '');
+  # where are you Test::Routine?
+  my $expect_err = 0;
+  if( $test->[0]->{allow_priv} ){
+    push @args, (template_private_vars => undef);
+  }
+  elsif( $test->[0]->{_private} ){
+    $expect_err = 1;
+  }
+
+  my $desc = join ' / ', @$prefs;
+  my $cmp = sub { cmp_pref(shift, $test, $p, $desc, $expect_err); };
+
+  my $q = DBIx::RoboQuery->new(@args);
   $q->prefer(@$prefs);
   my $r2 = $q->resultset;
+
   is_deeply($r2->{preferences}, $prefs, 'preferences ready');
-  is_deeply($r2->preference(@$test), $$test[$p-1], "expected record $p");
+
+  {
+    my $preferred = eval { $r2->preference(@$test) };
+    my $e = $@;
+    if( $expect_err ){
+      like($e, qr/\Qvar.undef error - undefined variable: _private\E/, "error for $desc");
+    }
+    else {
+      is_deeply($preferred, $$test[$p-1], "expected record for $desc");
+    }
+  }
 }
 
 done_testing;
