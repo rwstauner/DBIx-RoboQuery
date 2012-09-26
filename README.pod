@@ -12,7 +12,7 @@ DBIx::RoboQuery - Very configurable/programmable query object
 
 =head1 VERSION
 
-version 0.021
+version 0.030
 
 =head1 SYNOPSIS
 
@@ -184,6 +184,20 @@ L<< Template->new()|Template >>
 You can use this to overwrite the default options, but be sure to use the
 C<variables> options rather than including C<VARIABLES> in this hash
 unless you don't want the default variables to be available to the template.
+
+=item *
+
+C<template_private_vars>
+
+B<Not normally needed>
+
+This is a regexp (which defaults to C<$Template::Stash::PRIVATE>
+(which defaults to C<qr/^[_.]/>)).
+Any template variables that match will not be accessible in the template
+(but will return undef, which will throw an error under C<STRICT> mode).
+If you want to access "private" variables (including "private" hash keys)
+in your templates (the main query template or any templates passed to L</prefer>)
+you should set this to C<undef> to tell L<Template> not to check variable names.
 
 =item *
 
