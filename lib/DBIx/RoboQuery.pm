@@ -84,7 +84,6 @@ sub new {
     key_columns => [],
     resultset_class => "${class}::ResultSet",
     variables => {},
-    template_private_vars => $Template::Stash::PRIVATE,
   };
 
   bless $self, $class;
@@ -471,7 +470,8 @@ sub _process_template {
   my $output = '';
 
   # this is a regexp for vars that are considered private (will appear undef in template)
-  local $Template::Stash::PRIVATE = $self->{template_private_vars};
+  local $Template::Stash::PRIVATE = $self->{template_private_vars}
+    if exists $self->{template_private_vars};
 
   $self->{tt}->process($template, $vars, \$output)
     or die($self->{tt}->error(), "\n");

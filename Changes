@@ -2,6 +2,9 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+  - Don't pre-cache $Template::Stash::PRIVATE at instantiation;
+    Only overwrite the var if the attribute was passed in.
+
 0.030     2012-09-26T03:19:09Z
 
   [Backward Incompatible Bugfix]
