@@ -61,6 +61,12 @@ Any template variables that match will not be accessible in the template
 If you want to access "private" variables (including "private" hash keys)
 in your templates (the main query template or any templates passed to L</prefer>)
 you should set this to C<undef> to tell L<Template> not to check variable names.
+* C<template_tr_name>
+If you pass a hashref for C<transformations> the module will install
+a sub that allows you to modify a row using the template syntax.
+By default it is named C<template>,
+but you may use this attribute to specify and alternate name
+(or use C<undef> to disable the addition of this transformation sub).
 * C<transformations>
 An instance of L<Sub::Chain::Group>
 (or a hashref (See L</prepare_transformations>.))
@@ -390,6 +396,12 @@ this method will do nothing.
 It is mostly here to help a subclass use a different module
 for transformations if desired.
 
+Additionally, if you pass in a hash ref
+it will add a sub to the transformations hash named C<template>
+(or the value you pass as C<template_tr_name> to the constructor)
+if a sub by that name doesn't already exist.
+It uses L</template_tr_callback> to create the code ref.
+
 =cut
 
 sub prepare_transformations {
@@ -630,10 +642,40 @@ sub tr_groups {
   return $self->transform($name, groups => $groups, args => [@args]);
 }
 
+=method tr_row
+
+  $query->tr_row("func", "before", @args);
+
+This is a shortcut for calling L</transform> with a
+"before" or "after" hook that operates on the whole row:
+
+  $query->transform("func", hook => "before", @args);
+
+=cut
+
 sub tr_row {
   my ($self, $name, $hooks, @args) = @_;
   return $self->transform($name, hooks => $hooks, args => [@args]);
 }
+
+=method template_tr_callback
+
+This returns a code ref that can be included in the C<transformations> hash.
+This is used internally by L</prepare_transformations>
+but is available separately in case you need to add it manually
+(if you're passing a C<transformations> object to the constructor
+rather than a hash ref).
+
+The sub returned by this method accepts a hashref
+and a template string (without the C<[% %]>),
+processes the template string (passing the hashref as a var named "row"),
+and returns the hash ref (in case it was modified by the template):
+
+  my $cb = $query->template_tr_callback;
+  $cb->({foo => 'bar'}, q[ row.baz = "qux" ]);
+  # returns { foo => 'bar', baz => 'qux' };
+
+=cut
 
 sub template_tr_callback {
   my ($self) = @_;
@@ -730,7 +772,18 @@ The query can be built with templates
 which allows for perl variables and functions
 to interpolate and/or generate the SQL
 
-* The output can be transformed (using L<Sub::Chain::Group>)
+=item *
+
+The output can be transformed (using L<Sub::Chain::Group>).
+You can specify mutltiple transformations per field
+and you can specify transformations that operate on the whole row.
+This way you can set the value of one field based on the value of another.
+
+See L</transform> (and the C<tr_*> shortcuts),
+L</template_tr_callback>,
+C<template_tr_name> (in L</new>)
+and L<Sub::Chain::Group/HOOKS>
+for more information.
 
 * TODO: list more
 
