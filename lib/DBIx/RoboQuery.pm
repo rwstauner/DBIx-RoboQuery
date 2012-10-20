@@ -10,6 +10,9 @@ use DBIx::RoboQuery::ResultSet ();
 use DBIx::RoboQuery::Util ();
 use Template 2.22; # Template Toolkit
 
+# no warnings 'once';
+my $_template_stash_private = $Template::Stash::PRIVATE;
+
 =method new
 
   my $query = DBIx::RoboQuery->new(%opts); # or \%opts
