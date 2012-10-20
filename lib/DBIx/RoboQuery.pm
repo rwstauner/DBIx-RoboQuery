@@ -84,6 +84,7 @@ sub new {
     key_columns => [],
     resultset_class => "${class}::ResultSet",
     variables => {},
+    template_tr_name => 'template',
   };
 
   bless $self, $class;
@@ -365,6 +366,7 @@ sub _pass_through_args {
     template_options
     transformations
     template_private_vars
+    template_tr_name
     variables
   ));
 }
@@ -399,12 +401,24 @@ sub prepare_transformations {
   # assume a simple hash is a hash of named subs
   if( ref $tr eq 'HASH' ){
     require Sub::Chain::Group;
+
+    # the name of the template func can be changed (or disabled)
+    if( my $tr_name = $self->{template_tr_name} ){
+      # add the template callback to the subs (with $self embedded)
+      $tr = {
+        %$tr,
+        $tr_name => $self->template_tr_callback,
+      }
+        if ! exists $tr->{ $tr_name };
+    }
+
     $self->{transformations} =
       Sub::Chain::Group->new(
         chain_class => 'Sub::Chain::Named',
         chain_args  => {subs => $tr},
       );
   }
+
   # return nothing
   return;
 }
@@ -616,9 +630,21 @@ sub tr_groups {
   return $self->transform($name, groups => $groups, args => [@args]);
 }
 
-# TODO: tr_row?  could do it named func style,
-# but a template of '[% row.fld1 = 0 %]' seems more useful
-# (updating the hash should work, but if not this would: '[% _save_row(row) %]')
+sub tr_row {
+  my ($self, $name, $hooks, @args) = @_;
+  return $self->transform($name, hooks => $hooks, args => [@args]);
+}
+
+sub template_tr_callback {
+  my ($self) = @_;
+  return sub {
+    my ($row, $template) = @_;
+    # (updating the hash should work, but if not this would: '[% _save_row(row) %]')
+    $template = '[% ' . $template . ' %]';
+    $self->_process_template(\$template, {row => $row});
+    return $row;
+  };
+}
 
 1;
 
@@ -734,6 +760,5 @@ where you are the source of the query templates.
 * Consider an option for including direction (C<ASC>/C<DESC>) in L</order>
 * Write a lot more tests
 * Allow binding an arrayref and returning '?,?,?'
-* Accept transformations or callbacks that operate on the whole row?
 * Accept bind variables in the constructor?
 * Add support for L<DBIx::Connector>?
