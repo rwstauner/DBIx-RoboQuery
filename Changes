@@ -2,6 +2,8 @@ Revision history for DBIx::RoboQuery
 
 {{$NEXT}}
 
+0.032     2012-10-20T22:47:27Z
+
   - Add row-level transformations and a 'tr_row' shortcut method.
   - Minor optimizations to row fetching
 
