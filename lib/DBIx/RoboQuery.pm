@@ -779,7 +779,7 @@ to interpolate and/or generate the SQL
 =item *
 
 The output can be transformed (using L<Sub::Chain::Group>).
-You can specify mutltiple transformations per field
+You can specify multiple transformations per field
 and you can specify transformations that operate on the whole row.
 This way you can set the value of one field based on the value of another.
 
