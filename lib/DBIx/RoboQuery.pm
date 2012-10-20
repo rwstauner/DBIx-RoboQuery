@@ -428,6 +428,7 @@ sub prepare_transformations {
       Sub::Chain::Group->new(
         chain_class => 'Sub::Chain::Named',
         chain_args  => {subs => $tr},
+        hook_as_hash => 1,
       );
   }
 

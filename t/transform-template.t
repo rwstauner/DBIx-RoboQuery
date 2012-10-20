@@ -97,4 +97,14 @@ is_deeply
     'template func not overridden';
 }
 
+{
+  my $q = new_query();
+
+  $q->tr_row(template => after => 'row.rub = "ber"');
+  is_deeply
+    do_tr($q, [qw( duck rub )], ['quack', '']),
+    ['quack', 'ber'],
+    'template func receives hash';
+}
+
 done_testing;
